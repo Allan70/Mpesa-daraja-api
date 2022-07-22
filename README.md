@@ -54,3 +54,9 @@ A simple blog platform will help a developer to ceonvey their ideas and the idea
 [Learn about user permissions here](https://www.youtube.com/watch?v=jI4K7L-LI58&list=PLZlA0Gpn_vH_uZs4vJMIhcinABSTUH2bY&index=10)
 
 When creating a complex permission based system you will learn how to manage the actions that your users can and cannot do. It does no make any sense for your users to be able to delete other user's posts and accounts.
+
+## Learn More Express
+
+[ExpressJS beginner to Master](https://www.youtube.com/watch?v=SccSCuHhOw0&list=PLZlA0Gpn_vH_uZs4vJMIhcinABSTUH2bY&index=11)
+
+If you are building backends with JavaScript then you will be using Express JS more often than not.
