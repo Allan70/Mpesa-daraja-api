@@ -60,3 +60,9 @@ When creating a complex permission based system you will learn how to manage the
 [ExpressJS beginner to Master](https://www.youtube.com/watch?v=SccSCuHhOw0&list=PLZlA0Gpn_vH_uZs4vJMIhcinABSTUH2bY&index=11)
 
 If you are building backends with JavaScript then you will be using Express JS more often than not.
+
+## Create your first NPM package (Create an MPESA NPM pakage)
+
+It may seem intimidating but it is extremely easy.
+
+[Creating your first npm package](https://www.youtube.com/watch?v=J4b_T-qH3BY)
