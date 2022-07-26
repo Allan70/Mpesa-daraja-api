@@ -1,0 +1,23 @@
+{
+  "name": "mpesa-daraja-api",
+  "version": "1.0.0",
+  "description": "Implementing M-Pesa Daraja API with NodeJS",
+  "main": "./package/index.js",
+  "scripts": {
+    "test": "jest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Allan70/Mpesa-daraja-api.git"
+  },
+  "keywords": [],
+  "author": "Abere Allan",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Allan70/Mpesa-daraja-api/issues"
+  },
+  "homepage": "https://github.com/Allan70/Mpesa-daraja-api#readme",
+  "devDependencies": {
+    "jest": "^28.1.3"
+  }
+}
