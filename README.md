@@ -17,6 +17,18 @@ Implementing M-Pesa Daraja API with NodeJS
 - [ ] Secret key.
 - [ ] Pass key.
 
+When building the package make sure it will accept 
+1. The keys above. 
+2. Source url that will accept a JSON object 
+3. A destination url where the M-Pesa STK push will redirect the user on a successful transaction. 
+4. The package should also display a JSON of the error message on a failiure.
+
+### Objectives
+- [ ] Get source URL
+- [ ] Get destination url
+- [ ] Error JSON
+- [ ] On success JSON.
+
 ## Build a Simple REST API 
 
 [Simple Rest API](https://www.youtube.com/watch?v=fgTGADljAeg&list=PLZlA0Gpn_vH_uZs4vJMIhcinABSTUH2bY&index=4)
