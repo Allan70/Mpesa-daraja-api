@@ -17,6 +17,11 @@ Implementing M-Pesa Daraja API with NodeJS
 
 Learning how to build a simple REST API will teach the dev the basics of handling the backend of a given computer system.
 
+## The Daraja API will accept the following
+- [ ] Consumer key.
+- [ ] Secret key.
+- [ ] Pass key.
+
 ## Learn about how to build a paginated RestAPI with node JS
 
 [More on Paginated REST APIs Here](https://www.youtube.com/watch?v=ZX3qt0UWifc&list=PLZlA0Gpn_vH_uZs4vJMIhcinABSTUH2bY&index=7)
