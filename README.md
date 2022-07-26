@@ -11,16 +11,17 @@ Implementing M-Pesa Daraja API with NodeJS
 [NodeJS with DarajaAPI Part 1](https://www.youtube.com/watch?v=hEcFfjgYl6s&t=13s)
 [NodeJS with DarajaAPI Part 2](https://www.youtube.com/watch?v=l82ZMQ0CatU)
 
-## Build a Simple REST API 
-
-[Simple Rest API](https://www.youtube.com/watch?v=fgTGADljAeg&list=PLZlA0Gpn_vH_uZs4vJMIhcinABSTUH2bY&index=4)
-
-Learning how to build a simple REST API will teach the dev the basics of handling the backend of a given computer system.
 
 ## The Daraja API will accept the following
 - [ ] Consumer key.
 - [ ] Secret key.
 - [ ] Pass key.
+
+## Build a Simple REST API 
+
+[Simple Rest API](https://www.youtube.com/watch?v=fgTGADljAeg&list=PLZlA0Gpn_vH_uZs4vJMIhcinABSTUH2bY&index=4)
+
+Learning how to build a simple REST API will teach the dev the basics of handling the backend of a given computer system.
 
 ## Learn about how to build a paginated RestAPI with node JS
 
