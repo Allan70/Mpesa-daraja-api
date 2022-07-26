@@ -5,7 +5,11 @@ Implementing M-Pesa Daraja API with NodeJS
 ## Learn about Daraja API
 
 [Learn about Daraja API from here](https://www.youtube.com/watch?v=ZFSBVqFu4jM)
+
 [Create a simple NodeJS server](https://www.youtube.com/watch?v=VShtPwEkDD0&list=PLZlA0Gpn_vH_uZs4vJMIhcinABSTUH2bY)
+
+[NodeJS with DarajaAPI Part 1](https://www.youtube.com/watch?v=hEcFfjgYl6s&t=13s)
+[NodeJS with DarajaAPI Part 2](https://www.youtube.com/watch?v=l82ZMQ0CatU)
 
 ## Build a Simple REST API 
 
