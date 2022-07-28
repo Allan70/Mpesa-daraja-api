@@ -1,8 +1,6 @@
 const express = require('express');
 const cors = require('cors');
-const {
-    default: axios
-} = require('axios');
+const axios = require('axios');
 
 // configure .env files
 require('dotenv').config();
@@ -24,11 +22,6 @@ app.use(cors());
 app.get("/", (req, res) => {
     res.send("<h1>Hello from Pentecost</h1>");
 });
-
-// // Test for getting the token
-// app.get("/token", (req, res) => {
-//     generateToken();
-// });
 
 // Middleware to generate token
 const generateToken = async (req, res, next) => {
@@ -56,15 +49,15 @@ const generateToken = async (req, res, next) => {
 app.post("/stk", generateToken, async (req, res) => {
     const date = new Date();
 
-    const phoneNumber = req.body.phone.substring(-1); //ensure it starts with 254 eg. 254708374149
+    const phoneNumber = req.body.phone; //ensure it starts with 254 eg. 254708374149
     const amount = req.body.amount;
 
     const businessNumber = process.env.MPESA_PAYBILL; //your paybill
     const tillNumber = process.env.MPESA_TILL; //your tillnumber
-    const mpesaPassword = process.env.MPESA_PASSWORD; 
+    const mpesaPassword = process.env.MPESA_PASSWORD;
 
     const merchantEndPoint = 'https://sandbox.safaricom.co.ke/mpesa/stkpush/v1/processrequest'; // change the sandbox to api during production
-    const callBackURL = "https://mydomain.com/pat";
+    const callBackURL = "https://mydomain.com/path";
 
     const timestamp = (
         date.getFullYear() +
@@ -75,34 +68,37 @@ app.post("/stk", generateToken, async (req, res) => {
         ("0" + date.getSeconds()).slice(-2)
     );
 
-    const passwordSaf = new Buffer.from(businessNumber + mpesaPassword + timestamp).toString("base64");
+    const pass = (businessNumber + mpesaPassword + timestamp);
 
+    console.log(pass);
+    const passwordSaf = btoa(pass);
+
+    console.log(passwordSaf);
+
+    console.log("MTc0Mzc5YmZiMjc5ZjlhYTliZGJjZjE1OGU5N2RkNzFhNDY3Y2QyZTBjODkzMDU5YjEwZjc4ZTZiNzJhZGExZWQyYzkxOTIwMjIwNzI4MjEzNTE4")
     const darajaRequestBody = {
-        "BusinessShortCode": businessNumber,
+        "BusinessShortCode": parseInt(businessNumber),
         "Password": passwordSaf,
         "Timestamp": timestamp,
         "TransactionType": "CustomerPayBillOnline", //CustomerPayBillOnline(for Paybill) - CustomerBuyGoodsOnline(for till number)
-        "Amount": amount,
-        "PartyA": `254${phoneNumber}`,
-        "PartyB": businessNumber,
-        "PhoneNumber": `254${phoneNumber}`,
+        "Amount": parseInt(amount),
+        "PartyA": parseInt(`254${phoneNumber}`),
+        "PartyB": parseInt(businessNumber),
+        "PhoneNumber": parseInt(`254${phoneNumber}`),
         "CallBackURL": callBackURL,
-        "AccountReference": "Test", //`254${phoneNumber}`
-        "TransactionDesc": "Test" //Enter your randomly generated ticket numbers here.
-    };
+        "AccountReference": "CompanyXLTD", //`254${phoneNumber}`
+        "TransactionDesc": "Payment of X" //Enter your randomly generated ticket numbers here.
+    }
 
-    await axios.post(
-        merchantEndPoint,
-        darajaRequestBody, {
-            headers: {
-                Authorization: `Bearer ${token}`,
-            },
-        }
-    ).then((data) => {
-        console.log(data);
-        res.status(200).json(data)
-    }).catch((e) => {
-        console.log(e.message);
-        res.status(400).json(e.message);
+    let unirest = require('unirest');
+    let request = unirest('POST', 'https://sandbox.safaricom.co.ke/mpesa/stkpush/v1/processrequest').headers({
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+    }).send(darajaRequestBody).end(res => {
+        if (res.error)
+            console.log(res.error);
+        console.log(res.raw_body);
     });
 });
+
+
