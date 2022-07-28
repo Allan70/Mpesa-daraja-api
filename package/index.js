@@ -35,5 +35,15 @@ app.post("/paybill", generateToken, async (req, res) => {
     mpesa_paybill(phoneNumber, amountFromUser);
 
 });
+app.post("/buy_goods", generateToken, async (req, res) => {
+    const phoneNumber = req.body.phone; //ensure it starts with 254 eg. 254708374149
+    const amountFromUser = req.body.amount;
+    const tillNumber = req.body.tillNumber || process.env.MPESA_TILL;
+
+    const mpesa_buy_goods = require('./mpesa_buy_goods');
+
+    mpesa_buy_goods(phoneNumber, amountFromUser,tillNumber);
+
+});
 
 
