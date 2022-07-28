@@ -27,7 +27,7 @@ When building the package make sure it will accept
 From the user get the following.
 - [ ] Get Source URL 
 - [x] Get Consumer key
-- [ ] Get Secret key
+- [x] Get Secret key
 - [ ] Get token generating url
 - [ ] Get Pass key
 - [ ] Get destination url
