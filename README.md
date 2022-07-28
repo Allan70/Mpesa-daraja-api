@@ -91,7 +91,7 @@ When creating a complex permission based system you will learn how to manage the
 
 If you are building backends with JavaScript then you will be using Express JS more often than not.
 
-## Create your first NPM package (Create an MPESA NPM pakage)
+## Create your first NPM package (Create an MPESA NPM package)
 
 It may seem intimidating but it is extremely easy.
 
