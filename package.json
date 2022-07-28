@@ -19,5 +19,8 @@
   "homepage": "https://github.com/Allan70/Mpesa-daraja-api#readme",
   "devDependencies": {
     "jest": "^28.1.3"
+  },
+  "dependencies": {
+    "axios": "^0.27.2"
   }
 }
