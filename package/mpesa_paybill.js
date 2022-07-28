@@ -1,4 +1,4 @@
-const mpesa_paybill = (phone, amount)=>{
+const mpesa_paybill = (phone, amount) => {
     const phoneNumber = phone; //ensure it starts with 254 eg. 254708374149
     const amountFromUser = amount;
 
@@ -6,7 +6,7 @@ const mpesa_paybill = (phone, amount)=>{
     const mpesaPassword = process.env.MPESA_PASSWORD;
 
     const merchantEndPoint = 'https://sandbox.safaricom.co.ke/mpesa/stkpush/v1/processrequest'; // change the sandbox to api during production
-    const callBackURL = "https://mydomain.com/path";
+    const callBackURL = process.env.CALLBACK_URL;
 
     //  import timestamp
     const timestamp = require('./timestamp')

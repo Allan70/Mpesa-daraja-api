@@ -25,7 +25,7 @@ app.get("/", (req, res) => {
 // Middleware to generate token
 const generateToken = require('./generateToken');
 
-
+// Paybill
 app.post("/paybill", generateToken, async (req, res) => {
     const phoneNumber = req.body.phone; //ensure it starts with 254 eg. 254708374149
     const amountFromUser = req.body.amount;
@@ -35,6 +35,8 @@ app.post("/paybill", generateToken, async (req, res) => {
     mpesa_paybill(phoneNumber, amountFromUser);
 
 });
+
+// buy goods
 app.post("/buy_goods", generateToken, async (req, res) => {
     const phoneNumber = req.body.phone; //ensure it starts with 254 eg. 254708374149
     const amountFromUser = req.body.amount;
@@ -42,8 +44,36 @@ app.post("/buy_goods", generateToken, async (req, res) => {
 
     const mpesa_buy_goods = require('./mpesa_buy_goods');
 
-    mpesa_buy_goods(phoneNumber, amountFromUser,tillNumber);
+    mpesa_buy_goods(phoneNumber, amountFromUser, tillNumber);
 
 });
 
+// default callback url
+app.post("/default_callback", generateToken, async (req, res) => {
+    // receives the body object from the user.
 
+    const requestBody = req.body;
+    const metaData = req.body.Body.stkCallback.CallbackMetadata;
+
+    console.log(requestBody);
+    console.log(metaData);
+
+    // {
+    //     Item: [
+    //       { Name: 'Amount', Value: 1 },
+    //       { Name: 'MpesaReceiptNumber', Value: 'QGS69QI18Y' },
+    //       { Name: 'TransactionDate', Value: 20220728233053 },
+    //       { Name: 'PhoneNumber', Value: 254712765337 }
+    //     ]
+    //   }
+
+    const receipt = {
+        "Amount": metaData.Item[0].Value,
+        "mpesaReceiptNumber": metaData.Item[1].Value,
+        "transactionDate": metaData.Item[2].Value,
+        "phoneNumber": metaData.Item[3].Value
+    }
+
+    console.log(receipt);
+
+});
