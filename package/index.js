@@ -58,14 +58,16 @@ app.post("/default_callback", generateToken, async (req, res) => {
     console.log(requestBody);
     console.log(metaData);
 
-    // {
-    //     Item: [
-    //       { Name: 'Amount', Value: 1 },
-    //       { Name: 'MpesaReceiptNumber', Value: 'QGS69QI18Y' },
-    //       { Name: 'TransactionDate', Value: 20220728233053 },
-    //       { Name: 'PhoneNumber', Value: 254712765337 }
-    //     ]
-    //   }
+    
+        // {
+        //    Item : [
+        //   { Name: 'Amount', Value: 1 },
+        //   { Name: 'MpesaReceiptNumber', Value: 'QGS69QI18Y' },
+        //   { Name: 'TransactionDate', Value: 20220728233053 },
+        //   { Name: 'PhoneNumber', Value: 254712765337 }
+        // ]
+        // }
+      
 
     const receipt = {
         "Amount": metaData.Item[0].Value,
@@ -74,6 +76,7 @@ app.post("/default_callback", generateToken, async (req, res) => {
         "phoneNumber": metaData.Item[3].Value
     }
 
+    // Receipt data 
     console.log(receipt);
 
 });
