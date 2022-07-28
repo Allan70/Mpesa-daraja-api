@@ -13,21 +13,29 @@ Implementing M-Pesa Daraja API with NodeJS
 
 
 ## The Daraja API will accept the following
-- [ ] Consumer key.
-- [ ] Secret key.
-- [ ] Pass key.
+- [x] Consumer key.
+- [x] Secret key.
+- [x] Pass key.
 
 When building the package make sure it will accept 
 1. The keys above. 
-2. Source url that will accept a JSON object 
-3. A destination url where the M-Pesa STK push will redirect the user on a successful transaction. 
-4. The package should also display a JSON of the error message on a failiure.
+2. Callback url that will redirect a user after a STK Push 
+3. The package should also display a JSON of the error message on a failiure.
 
 ### Objectives
-- [ ] Get source URL
+
+From the user get the following.
+- [ ] Get Source URL 
+- [ ] Get Consumer key
+- [ ] Get Secret key
+- [ ] Get token generating url
+- [ ] Get Pass key
 - [ ] Get destination url
+
+Generate the following to the user
 - [ ] Error JSON
-- [ ] On success JSON.
+- [ ] On success JSON
+- [ ] Generate specific messages to alert the user.
 
 ## Build a Simple REST API 
 
