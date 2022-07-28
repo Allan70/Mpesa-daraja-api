@@ -4,7 +4,9 @@
   "description": "Implementing M-Pesa Daraja API with NodeJS",
   "main": "./package/index.js",
   "scripts": {
-    "test": "jest"
+    "test": "jest",
+    "start":"node index.js",
+    "dev":"nodemon index.js"
   },
   "repository": {
     "type": "git",
@@ -21,6 +23,10 @@
     "jest": "^28.1.3"
   },
   "dependencies": {
-    "axios": "^0.27.2"
+    "axios": "^0.27.2",
+    "cors": "^2.8.5",
+    "dotenv": "^16.0.1",
+    "express": "^4.18.1",
+    "nodemon": "^2.0.19"
   }
 }
