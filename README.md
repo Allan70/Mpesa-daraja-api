@@ -30,7 +30,7 @@ From the user get the following.
 - [x] Get Secret key.
 - [x] Get token generating callback
 - [x] Get Pass key
-- [ ] Get destination url
+- [x] Get destination url
 
 Generate the following to the user
 - [ ] Error JSON
