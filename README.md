@@ -11,16 +11,29 @@ Implementing M-Pesa Daraja API with NodeJS
 [NodeJS with DarajaAPI Part 1](https://www.youtube.com/watch?v=hEcFfjgYl6s&t=13s)
 [NodeJS with DarajaAPI Part 2](https://www.youtube.com/watch?v=l82ZMQ0CatU)
 
-## Build a Simple REST API 
-
-[Simple Rest API](https://www.youtube.com/watch?v=fgTGADljAeg&list=PLZlA0Gpn_vH_uZs4vJMIhcinABSTUH2bY&index=4)
-
-Learning how to build a simple REST API will teach the dev the basics of handling the backend of a given computer system.
 
 ## The Daraja API will accept the following
 - [ ] Consumer key.
 - [ ] Secret key.
 - [ ] Pass key.
+
+When building the package make sure it will accept 
+1. The keys above. 
+2. Source url that will accept a JSON object 
+3. A destination url where the M-Pesa STK push will redirect the user on a successful transaction. 
+4. The package should also display a JSON of the error message on a failiure.
+
+### Objectives
+- [ ] Get source URL
+- [ ] Get destination url
+- [ ] Error JSON
+- [ ] On success JSON.
+
+## Build a Simple REST API 
+
+[Simple Rest API](https://www.youtube.com/watch?v=fgTGADljAeg&list=PLZlA0Gpn_vH_uZs4vJMIhcinABSTUH2bY&index=4)
+
+Learning how to build a simple REST API will teach the dev the basics of handling the backend of a given computer system.
 
 ## Learn about how to build a paginated RestAPI with node JS
 
