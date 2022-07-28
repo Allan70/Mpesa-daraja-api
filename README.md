@@ -29,7 +29,7 @@ From the user get the following.
 - [x] Get Consumer key
 - [x] Get Secret key.
 - [x] Get token generating callback
-- [ ] Get Pass key
+- [x] Get Pass key
 - [ ] Get destination url
 
 Generate the following to the user
