@@ -28,7 +28,7 @@ From the user get the following.
 - [ ] Get Source URL 
 - [x] Get Consumer key
 - [x] Get Secret key.
-- [ ] Get token generating url
+- [x] Get token generating callback
 - [ ] Get Pass key
 - [ ] Get destination url
 
