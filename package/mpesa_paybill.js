@@ -1,4 +1,4 @@
-const mpesa = ({phone, amount})=>{
+const mpesa_paybill = (phone, amount)=>{
     const phoneNumber = phone; //ensure it starts with 254 eg. 254708374149
     const amountFromUser = amount;
 
@@ -31,16 +31,15 @@ const mpesa = ({phone, amount})=>{
     }
 
     let unirest = require('unirest');
-    let request = unirest('POST', merchantEndPoint).headers({
+    return request = unirest('POST', merchantEndPoint).headers({
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${token}`
     }).send(darajaRequestBody).end(res => {
         if (res.error)
             console.log(res.error);
         console.log(res.raw_body);
-        console.log(res.Body);
     });
 
 };
 
-module.exports = mpesa;
+module.exports = mpesa_paybill;
