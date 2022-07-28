@@ -33,7 +33,6 @@ app.post("/paybill", generateToken, async (req, res) => {
     const mpesa_paybill = require('./mpesa_paybill');
 
     mpesa_paybill(phoneNumber, amountFromUser);
-
 });
 
 // buy goods
@@ -49,14 +48,10 @@ app.post("/buy_goods", generateToken, async (req, res) => {
 });
 
 // default callback url
-app.post("/default_callback", generateToken, async (req, res) => {
-    // receives the body object from the user.
+app.post("/default_callback", async (req, res) => {
 
     const requestBody = req.body;
     const metaData = req.body.Body.stkCallback.CallbackMetadata;
-
-    console.log(requestBody);
-    console.log(metaData);
 
     const receipt = {
         "Amount": metaData.Item[0].Value,
@@ -65,7 +60,21 @@ app.post("/default_callback", generateToken, async (req, res) => {
         "phoneNumber": metaData.Item[3].Value
     }
 
-    // Receipt data 
+    const transactionStatus = requestBody.Body.stkCallback.ResultDesc;
+
+     
     console.log(receipt);
+    console.log(transactionStatus);
+
+    const transactionInfo = {
+        "transactionStatus": transactionStatus,
+        "receipt": receipt
+    }
+
+    // send transaction info to mongoDB database
+    
+
+    // respond with Receipt data and transaction status with description.
+    res.send(transactionInfo);
 
 });
