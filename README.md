@@ -75,7 +75,7 @@ Next you will call the functionby setting the request from the previous function
     transaction.getTransactionInfo(req)
 ```
 
-And that is it when done right you will have someting that looks a little like this.
+That is it. When done right you will have someting that looks a little like this.
 ```JS
 app.get("/def_callback", async (req, res) => {
 
