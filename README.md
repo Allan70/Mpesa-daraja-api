@@ -45,6 +45,7 @@ When we combine everything it will look something like this.
 
 ```JS
     const mpesa_paybill = require('./mpesa_paybill');
+    
     const payBillBody = {
         "phoneNumber": req.body.phone,
         "amountFromUser": req.body.amount,
