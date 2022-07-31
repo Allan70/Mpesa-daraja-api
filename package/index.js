@@ -27,12 +27,18 @@ const generateToken = require('./generateToken');
 
 // Paybill
 app.post("/paybill", generateToken, async (req, res) => {
-    const phoneNumber = req.body.phone; //ensure it starts with 254 eg. 254708374149
-    const amountFromUser = req.body.amount;
-
     const mpesa_paybill = require('./mpesa_paybill');
+    const payBillBody = {
+        "phoneNumber": req.body.phone,
+        "amountFromUser": req.body.amount,
+        "businessNumber": req.body.payBillNumber,
+        "mpesaPassword": req.body.mpesaPassword,
+        "callback_URL": req.body.callbackURL,
+        "account_reference": req.body.account_reference,
+        "transaction_desc": req.body.transaction_desc
+    };
 
-    mpesa_paybill(phoneNumber, amountFromUser);
+    mpesa_paybill(payBillBody);
 });
 
 // buy goods
@@ -44,15 +50,13 @@ app.post("/buy_goods", generateToken, async (req, res) => {
     const mpesa_buy_goods = require('./mpesa_buy_goods');
 
     mpesa_buy_goods(phoneNumber, amountFromUser, tillNumber);
-
 });
 
 // default callback url to receive transactions
-app.post("/default_callback", async (req, res) => {
+app.get("/def_callback", async (req, res) => {
 
-    const transaction = require('./transaction')
-    
-    // respond with Receipt data and transaction status with description.
+    const transaction = require('./transaction');
+    console.log(transaction.getTransactionInfo(req));
     res.send(transaction.getTransactionInfo(req));
 
 });
