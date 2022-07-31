@@ -1,12 +1,10 @@
-const mpesa_paybill = (phone, amount) => {
-    const phoneNumber = phone; //ensure it starts with 254 eg. 254708374149
-    const amountFromUser = amount;
-
-    const businessNumber = process.env.MPESA_PAYBILL; //your paybill
-    const mpesaPassword = process.env.MPESA_PASSWORD;
-
+const mpesa_paybill = (paybillbody) => {
+    const phoneNumber = paybillbody.phoneNumber; //ensure it starts with 254 eg. 254708374149
+    const amountFromUser = paybillbody.amountFromUser;
+    const businessNumber = paybillbody.businessNumber; //your paybill
+    const mpesaPassword = paybillbody.mpesaPassword;
     const merchantEndPoint = 'https://sandbox.safaricom.co.ke/mpesa/stkpush/v1/processrequest'; // change the sandbox to api during production
-    const callBackURL = process.env.CALLBACK_URL;
+    const callBackURL = paybillbody.callback_URL;
 
     //  import timestamp
     const timestamp = require('./timestamp')
@@ -26,8 +24,8 @@ const mpesa_paybill = (phone, amount) => {
         "PartyB": parseInt(businessNumber),
         "PhoneNumber": parseInt(`254${phoneNumber}`),
         "CallBackURL": callBackURL,
-        "AccountReference": "CompanyXLTD", //`254${phoneNumber}`
-        "TransactionDesc": "Payment of X" //Enter your randomly generated ticket numbers here.
+        "AccountReference": (paybillbody.account_reference), //`254${phoneNumber}`
+        "TransactionDesc": (paybillbody.transaction_desc) //Enter your randomly generated ticket numbers here.
     }
 
     let unirest = require('unirest');
