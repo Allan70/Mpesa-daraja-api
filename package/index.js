@@ -56,7 +56,7 @@ app.post("/buy_goods", generateToken, async (req, res) => {
 app.get("/def_callback", async (req, res) => {
 
     const transaction = require('./transaction');
-    console.log(transaction.getTransactionInfo(req));
+
     res.send(transaction.getTransactionInfo(req));
 
 });
