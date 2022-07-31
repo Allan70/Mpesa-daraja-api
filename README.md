@@ -2,7 +2,7 @@
 
 Implementing M-Pesa Daraja API with NodeJS package.
 - [ ] Add Africas Talking API to return specified company messages
-- [ ] Perform online payments with PayBill
+- [x] Perform online payments with PayBill
 - [ ] Perform online payments with Lipa na M-Pesa
 
 ## M-Pesa Online Paybill
@@ -58,5 +58,33 @@ When we combine everything it will look something like this.
 
     mpesa_paybill(payBillBody);
 ```
+
+## Receive Transaction Information
+
+Upon making a successful transaction with the Daraja API 2.0 at least with the PayBill the resulting API receipt can be received via a POST request to the callback url.
+This can be invoked by calling the ```getTransactionInfo()``` function.
+this can be done with 2 lines of code.
+
+First off you can import the function
+```JS
+  const transaction = require('./transaction');
+```
+
+Next you will call the functionby setting the request from the previous function as its argument.
+```JS
+    transaction.getTransactionInfo(req)
+```
+
+And that is it when done right you will have someting that looks a little like this.
+```JS
+app.get("/def_callback", async (req, res) => {
+
+    const transaction = require('./transaction');
+
+    res.send(transaction.getTransactionInfo(req));
+
+});
+```
+
 
 
