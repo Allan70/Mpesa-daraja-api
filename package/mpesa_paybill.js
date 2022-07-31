@@ -18,7 +18,7 @@ const mpesa_paybill = (paybillbody) => {
         "BusinessShortCode": parseInt(businessNumber),
         "Password": passwordSaf,
         "Timestamp": timestamp,
-        "TransactionType": "CustomerPayBillOnline", //CustomerPayBillOnline(for Paybill) - CustomerBuyGoodsOnline(for till number)
+        "TransactionType": "CustomerPayBillOnline", 
         "Amount": parseInt(amountFromUser),
         "PartyA": parseInt(`254${phoneNumber}`),
         "PartyB": parseInt(businessNumber),
