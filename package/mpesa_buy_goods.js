@@ -1,33 +1,31 @@
-const mpesa_buy_goods = (phone, amount, tillNumber)=>{
-    const phoneNumber = phone; //ensure it starts with 254 eg. 254708374149
-    const amountFromUser = amount;
-
-    const tillNumber = tillNumber; //your paybill
-    const mpesaPassword = process.env.MPESA_PASSWORD;
-
+const mpesa_buy_goods = (buyGoodsBody) => {
+    const phoneNumber = buyGoodsBody.phoneNumber; //ensure it starts with 254 eg. 254708374149
+    const amountFromUser = buyGoodsBody.amountFromUser;
+    const businessNumber = buyGoodsBody.businessNumber; //your paybill
+    const mpesaPassword = buyGoodsBody.mpesaPassword;
     const merchantEndPoint = 'https://sandbox.safaricom.co.ke/mpesa/stkpush/v1/processrequest'; // change the sandbox to api during production
-    const callBackURL = "https://mydomain.com/path";
+    const callBackURL = buyGoodsBody.callback_URL;
 
     //  import timestamp
     const timestamp = require('./timestamp')
 
-    const pass = (tillNumber + mpesaPassword + timestamp);
+    const pass = (businessNumber + mpesaPassword + timestamp);
 
 
     const passwordSaf = btoa(pass);
 
     const darajaRequestBody = {
-        "BusinessShortCode": parseInt(tillNumber),
+        "BusinessShortCode": parseInt(businessNumber),
         "Password": passwordSaf,
         "Timestamp": timestamp,
-        "TransactionType": "CustomerBuyGoodsOnline", //CustomerPayBillOnline(for Paybill) - CustomerBuyGoodsOnline(for till number)
+        "TransactionType": "CustomerBuyGoodsOnline", 
         "Amount": parseInt(amountFromUser),
         "PartyA": parseInt(`254${phoneNumber}`),
-        "PartyB": parseInt(tillNumber),
+        "PartyB": parseInt(businessNumber),
         "PhoneNumber": parseInt(`254${phoneNumber}`),
         "CallBackURL": callBackURL,
-        "AccountReference": "CompanyXLTD", //`254${phoneNumber}`
-        "TransactionDesc": "Payment of X" //Enter your randomly generated ticket numbers here.
+        "AccountReference": (buyGoodsBody.account_reference), //`254${phoneNumber}`
+        "TransactionDesc": (buyGoodsBody.transaction_desc) //Enter your randomly generated ticket numbers here.
     }
 
     let unirest = require('unirest');
