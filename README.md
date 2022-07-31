@@ -59,7 +59,7 @@ When we combine everything it will look something like this.
     mpesa_paybill(payBillBody);
 ```
 
-## Receive Transaction Information
+## Receive Transaction Information (Receipts)
 
 Upon making a successful transaction with the Daraja API 2.0 at least with the PayBill the resulting API receipt can be received via a POST request to the callback url.
 This can be invoked by calling the ```getTransactionInfo()``` function.
