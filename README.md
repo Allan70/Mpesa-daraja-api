@@ -6,7 +6,7 @@ Implementing M-Pesa Daraja API with NodeJS package.
 - [ ] Perform online payments with Lipa na M-Pesa
 
 ## M-Pesa Online Paybill
-In order to make a JSON based API call to the **Safaricom 2.0 Daraja API** 
+In order to make a JSON based API call to the **Safaricom 2.0 Daraja API**.
 
 The prototype of the package is consumed as a JSON. The function ```mpesa_paybill()``` accepts a json object for our example it will be called ```payBillBody``` the JSON has all the relevant details to make a call to the **Safaricom Daraja 2.0 API** .
 
