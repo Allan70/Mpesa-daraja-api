@@ -35,7 +35,7 @@ const transaction = {
             }
 
             transactionInfo = {
-                "receipt": receiptInfo
+                "Error": receiptInfo
             }
 
             return transactionInfo;
