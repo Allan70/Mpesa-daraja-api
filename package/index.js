@@ -47,14 +47,12 @@ app.post("/buy_goods", generateToken, async (req, res) => {
 
 });
 
-// default callback url
+// default callback url to receive transactions
 app.post("/default_callback", async (req, res) => {
 
-
-    // send transaction info to mongoDB database
-
-
+    const transaction = require('./transaction')
+    
     // respond with Receipt data and transaction status with description.
-    res.send(transactionInfo);
+    res.send(transaction.getTransactionInfo(req));
 
 });
