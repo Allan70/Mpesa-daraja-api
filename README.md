@@ -65,7 +65,7 @@ Upon making a successful transaction with the Daraja API 2.0 at least with the P
 This can be invoked by calling the ```getTransactionInfo()``` function.
 this can be done with 2 lines of code.
 
-First off you can import the function
+First off you will import the object named ```transaction```.
 ```JS
   const transaction = require('./transaction');
 ```
