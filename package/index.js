@@ -50,29 +50,9 @@ app.post("/buy_goods", generateToken, async (req, res) => {
 // default callback url
 app.post("/default_callback", async (req, res) => {
 
-    const requestBody = req.body;
-    const metaData = req.body.Body.stkCallback.CallbackMetadata;
-
-    const receipt = {
-        "Amount": metaData.Item[0].Value,
-        "mpesaReceiptNumber": metaData.Item[1].Value,
-        "transactionDate": metaData.Item[2].Value,
-        "phoneNumber": metaData.Item[3].Value
-    }
-
-    const transactionStatus = requestBody.Body.stkCallback.ResultDesc;
-
-     
-    console.log(receipt);
-    console.log(transactionStatus);
-
-    const transactionInfo = {
-        "transactionStatus": transactionStatus,
-        "receipt": receipt
-    }
 
     // send transaction info to mongoDB database
-    
+
 
     // respond with Receipt data and transaction status with description.
     res.send(transactionInfo);
