@@ -3,7 +3,7 @@
 Implementing M-Pesa Daraja API with NodeJS package.
 - [ ] Add Africas Talking API to return specified company messages
 - [x] Perform online payments with PayBill
-- [ ] Perform online payments with Lipa na M-Pesa
+- [x] Perform online payments with Lipa na M-Pesa
 
 ## M-Pesa Online Paybill
 In order to make a JSON based API call to the **Safaricom 2.0 Daraja API** 
