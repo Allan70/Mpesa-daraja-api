@@ -13,11 +13,13 @@ const transaction = {
             transactionStatus = requestBody.Body.stkCallback.ResultDesc;
             metaData = requestBody.Body.stkCallback.CallbackMetadata;
 
+            console.log(metaData);
+
             receiptInfo = {
-                "amount": metaData.Item[0].Value,
-                "mpesaReceiptNumber": metaData.Item[1].Value,
-                "transactionDate": metaData.Item[2].Value,
-                "phoneNumber": metaData.Item[3].Value
+                "Amount": metaData.Item[0].Value,
+                "MpesaReceiptNumber": metaData.Item[1].Value,
+                "TransactionDate": metaData.Item[3].Value,
+                "PhoneNumber": metaData.Item[4].Value
             }
 
             transactionInfo = {
