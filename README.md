@@ -1,4 +1,6 @@
-# Mpesa-daraja-api NPM Package 
+# M-pesa Daraja API (NPM Package )
+
+This is an npm package intended to streamline the process of adding the M-Pesa Daraja API to your project.
 
 Implementing M-Pesa Daraja API with NodeJS package.
 - [ ] Add Africas Talking API to return specified company messages.
