@@ -2,12 +2,9 @@
 
 This is an npm package intended to streamline the process of adding the M-Pesa Daraja API to your project.
 
-Implementing M-Pesa Daraja API with NodeJS package.
-- [ ] Add Africas Talking API to return specified company messages.
-- [x] Perform online payments with PayBill.
-- [ ] Perform online payments with Lipa na M-Pesa.
-- [ ] Use TypeScript instead.
-- [ ] Make it a promise based program.
+
+M-Pesa is like a digital wallet on your phone that lets you send and receive money, pay for things, and even borrow small amounts of money. It works through text messages and is used a lot in Africa. You can use it without needing a bank account, and there are people called agents who help you turn cash into digital money and back again. It's super handy because you can do all these things using just your phone, even if you don't have internet.
+
 
 ## M-Pesa Online Paybill
 In order to make a JSON based API call to the **Safaricom 2.0 Daraja API** 
