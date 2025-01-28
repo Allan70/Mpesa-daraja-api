@@ -20,7 +20,7 @@ npm install mpesa-daraja-api
 
 ```
 
-## Importing the package into your Projet 
+## Importing the package into your Project 
 
 To add the package to your project you can use the following import statement
 
@@ -38,11 +38,16 @@ After importing the package into your project you can access the API by followin
 // Call the package
 const mpesa = Mpesa({callbackURL, secret, consumer_key, mpesa_base_url});
 
-//Make payment using M-Pesa paybill
-mpesa.paybill({phone, amount, payBillNumber, account_reference, transaction_desc});
+/** 
+ * Asynchronous methods making API calls under the hood
+ *
+ * */
+
+// Make payment using M-Pesa paybill 
+await mpesa.paybill({phone, amount, payBillNumber, account_reference, transaction_desc});
 
 //Make Payment using M-Pesa Till number
-mpesa.buyGoods({phone, amount, tillNumber, account_reference, transaction_desc});
+await mpesa.buyGoods({phone, amount, tillNumber, account_reference, transaction_desc});
 
 ```
 
