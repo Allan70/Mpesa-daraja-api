@@ -44,5 +44,4 @@ const transaction = {
 
 }
 
-
-module.exports = transaction;
+export default transaction;

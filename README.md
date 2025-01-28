@@ -1,91 +1,94 @@
-# M-pesa Daraja API (NPM Package )
+# M-pesa API npm package (Testing phase)
 
 This is an npm package intended to streamline the process of adding the M-Pesa Daraja API to your project.
 
+M-Pesa is like a digital wallet on your phone that lets you send and receive money, pay for things, and even borrow small amounts of money. It works through text messages and is used a lot in Africa. 
 
-M-Pesa is like a digital wallet on your phone that lets you send and receive money, pay for things, and even borrow small amounts of money. It works through text messages and is used a lot in Africa. You can use it without needing a bank account, and there are people called agents who help you turn cash into digital money and back again. It's super handy because you can do all these things using just your phone, even if you don't have internet.
+You can use it without needing a bank account, and there are people called agents who help you turn cash into digital money and back again. 
 
+It's super handy because you can do all these things using just your phone, even if you don't have internet.
 
-## M-Pesa Online Paybill
-In order to make a JSON based API call to the **Safaricom 2.0 Daraja API** 
+The following package allows a developer to interact with M-Pesa's transaction API to allow Software to make mobile payments. The package only supports `NodeJS` for now. More updates are to be made.
 
-The prototype of the package is consumed as a JSON. The function ```mpesa_paybill()``` accepts a json object for our example it will be called ```payBillBody``` the JSON has all the relevant details to make a call to the **Safaricom Daraja 2.0 API** .
+## Installing the package
 
-We begin by requiring the ```mpesa_paybill()``` function.
+Install the package into your project
 
-```JS
-    const mpesa_paybill = require('./mpesa_paybill');
- ```
- 
- Then we will create a JSON body that will contain the fields labelled below. 
- - phoneNumber
- - amountFromUser
- - businessNumber
- - mpesaPassword
- - callback_URL
- - account_reference
- - transaction_desc
- 
- ```JS
-    const payBillBody = {
-        "phoneNumber": req.body.phone,
-        "amountFromUser": req.body.amount,
-        "businessNumber": req.body.payBillNumber,
-        "mpesaPassword": req.body.mpesaPassword,
-        "callback_URL": req.body.callbackURL,
-        "account_reference": req.body.account_reference,
-        "transaction_desc": req.body.transaction_desc
-    };
-```
-Finally, insert the JSON variable to the ```mpesa_paybill()``` function. That will look something like this.
-```JS
-    mpesa_paybill(payBillBody);
+```sh
+
+npm install mpesa-daraja-api
+
 ```
 
-When we combine everything it will look something like this.
+## Importing the package into your Projet 
 
-```JS
-    const mpesa_paybill = require('./mpesa_paybill');
-    
-    const payBillBody = {
-        "phoneNumber": req.body.phone,
-        "amountFromUser": req.body.amount,
-        "businessNumber": req.body.payBillNumber,
-        "mpesaPassword": req.body.mpesaPassword,
-        "callback_URL": req.body.callbackURL,
-        "account_reference": req.body.account_reference,
-        "transaction_desc": req.body.transaction_desc
-    };
+To add the package to your project you can use the following import statement
 
-    mpesa_paybill(payBillBody);
+```js
+
+import Mpesa from "mpesa-daraja-api"
+
 ```
 
-## Receive Transaction Information (Receipts)
+## Usage
 
-Upon making a successful transaction with the Daraja API 2.0 at least with the PayBill the resulting API receipt can be received via a POST request to the callback url.
-This can be invoked by calling the ```getTransactionInfo()``` function.
-this can be done with 2 lines of code.
+After importing the package into your project you can access the API by following these steps.
 
-First off you will import the object named ```transaction```.
-```JS
-  const transaction = require('./transaction');
+```js
+// Call the package
+const mpesa = Mpesa({callbackURL, secret, consumer_key, mpesa_base_url});
+
+//Make payment using M-Pesa paybill
+mpesa.paybill({phone, amount, payBillNumber, account_reference, transaction_desc});
+
+//Make Payment using M-Pesa Till number
+mpesa.buyGoods({phone, amount, tillNumber, account_reference, transaction_desc});
+
 ```
 
-Next you will call the functionby setting the request from the previous function as its argument.
-```JS
-    transaction.getTransactionInfo(req)
-```
+NOTE: Rember to start a sandbox if you wish to test the API in a developer environment.
 
-That is it. When done right you will have someting that looks a little like this.
-```JS
-app.get("/def_callback", async (req, res) => {
+# callbackURL  : URL
+URL that will be called once payment call has been made (Successful payment web page/screen)
 
-    const transaction = require('./transaction');
+A CallBack URL is a valid secure URL that is used to receive notifications from M-Pesa API. It is the endpoint to which the results will be sent by M-Pesa API.
 
-    res.send(transaction.getTransactionInfo(req));
+	
+https://ip or domain:port/path
 
-});
-```
+e.g: https://mydomain.com/path
+
+https://0.0.0.0:9090/path
+
+# secret 
+M-Pesa API `Consumer Secret` 
+
+# consumer_key 
+M-Pesa API product `Consumer Key`
+
+
+# mpesa_base_url  
+Choosing the base url between the `mpesa sandbox url` and `mpesa production url`.
+
+The default url will be the M-pesa sandbox url if the option is left blank.
+
+# phone 
+Mobile phone number to be credited the amount.
+
+# amount 
+Amount to be paid via the API call
+
+# payBillNumber 
+Paybill number to be debited the amount
+
+# Till Number 
+Till number to be debited the amount
+
+# account_reference	
+Account Reference: This is an Alpha-Numeric parameter that is defined by your system as an Identifier of the transaction for the CustomerPayBillOnline transaction type. Along with the business name, this value is also displayed to the customer in the STK Pin Prompt message. Maximum of 12 characters.
+
+# transaction_desc	
+This is any additional information/comment that can be sent along with the request from your system. Maximum of 13 Characters.
 
 
 
