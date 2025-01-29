@@ -1,0 +1,27 @@
+{
+  "name": "daraja-package",
+  "version": "1.0.25",
+  "description": "A simple implementation of M-Pesa daraja API",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Allan70/Mpesa-daraja-api.git\".git"
+  },
+  "keywords": [
+    "daraja",
+    "daraja-api",
+    "m-pesa",
+    "nodejs",
+    "simple-mpesa-api",
+    "mpesa-api"
+  ],
+  "author": "Allan70",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Allan70/Mpesa-daraja-api.git\"/issues"
+  },
+  "homepage": "https://github.com/Allan70/Mpesa-daraja-api.git\"#readme"
+}
