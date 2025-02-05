@@ -12,11 +12,11 @@ The following package allows a developer to interact with M-Pesa's transaction A
 
 ## Installing the package
 
-Install the package into your project
+Install the package into your project you can find the npm package here.
 
 ```sh
 
-npm install mpesa-daraja-api
+npm install @allan70/daraja-package
 
 ```
 
@@ -26,7 +26,7 @@ To add the package to your project you can use the following import statement
 
 ```js
 
-import Mpesa from "mpesa-daraja-api"
+import Mpesa from "@allan70/daraja-package"
 
 ```
 
