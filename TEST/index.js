@@ -2,13 +2,12 @@
 import mpesa from "daraja-package";
 
 const mobilePay = mpesa({
-    callbackURL: "http://localhost:5147/login/",
-    secret: "e4lSZQUMhCXfkC78",
-    consumer_key: "m250cZEoRrh3xAdlpvYqaTNOF6YwYhyA",
-    mpesa_base_url: ""
+    callbackURL: "https://mydomain.com/b2b/result/",
+    secret: "kI3K9U23Lgwys7vyjGCGuCAvFoqzwXZuWKVjfCGpeDmPlhh5TgFJXMUGAussXKRe",
+    consumer_key: "Es9jiYGr7QQAgh4V4MPwo0j00sIOxtXN5uGA0JGu002uhzDR"
 })
 
-mobilePay.buyGoods({
+await mobilePay.buyGoods({
             phone: "+254712765337",
             amount: "100", //KES
             tillNumber: "3216396", // Till number
