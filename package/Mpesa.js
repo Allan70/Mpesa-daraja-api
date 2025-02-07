@@ -1,14 +1,13 @@
-
-
-import {timestamp as Timestamp} from "./timestamp"
-import axios from "axios"
-
 export default class Mpesa{
 
     constructor({ callbackURL, secret, consumer_key, mpesa_base_url="https://sandbox.safaricom.co.ke"}){
 
-        if(!callbackURL || !secret || !consumer_key){
-            throw new Error("All fields are required.");
+        if(!secret || !consumer_key){
+            throw new Error("Secreat and consumer key are required.");
+        }
+
+        if(!mpesa_base_url || mpesa_base_url === ""){
+            mpesa_base_url = "https://sandbox.safaricom.co.ke";
         }
 
         this.callbackURL = callbackURL;
@@ -18,26 +17,38 @@ export default class Mpesa{
     }
 
     async generateToken(){
-        const secret = this.secret;
-        const consumerKey = this.consumer_key;
-    
-        const auth = new Buffer.from(`${consumerKey}:${secret}`).toString("base64");
-    
-        await axios.get(`${this.url}/oauth/v1/generate?grant_type=client_credentials`, {
-            headers: {
-                "Authorization": `Basic ${auth}`
-            }
-        }).then((response) => {
-            token = response.data.access_token;
-            return token;
-        }).catch((err) => {
-            console.error("MPESA package ERROR: ", err);
-            throw new Error(err)
-        })
+        try{
+            const secretGen = this.secret;
+            const consumerKeyGen = this.consumer_key;
+            const token_url = `${this.url}/oauth/v1/generate?grant_type=client_credentials`;
+        
+            console.log(token_url)
+            const auth = new Buffer.from(`${consumerKeyGen}:${secretGen}`).toString("base64");
 
-        await fetch(`${this.url}/oauth/v1/generate?grant_type=client_credentials`, {
             
-        })
+            const response = await fetch(token_url, {
+                headers: {
+                    "Authorization": `Basic ${auth}`
+                },
+            })
+            .then((response)=>{
+                            console.log(response)
+                            console.log("Body", response.body)
+                            const token = response.data.access_token
+                            if(!token){
+                                console.log("Token was not generated")
+                                return;
+                            }
+                            return token;
+                        }).catch((error)=>{
+                            console.error("MPESA Token generation error");
+                            throw new Error(error);
+                        });
+            return response;
+        }catch(error){
+            console.error("MPESA generate token function error:", error)
+            throw new Error(error)
+        }
     }
 
     async paybill({phone, amount, payBillNumber, account_reference, transaction_desc}){
@@ -51,7 +62,7 @@ export default class Mpesa{
                 const merchantEndPoint = `${this.url}/mpesa/stkpush/v1/processrequest`; // change the sandbox to api during production
                 const callBackURL = this.callbackURL;
             
-                const timestamp = Timestamp;
+                const timestamp = Timestamp();
     
                 const pass = (businessNumber + mpesaPassword + timestamp);
     
@@ -70,20 +81,32 @@ export default class Mpesa{
                     "AccountReference": account_reference, //`254${phoneNumber}`
                     "TransactionDesc": transaction_desc //Enter your randomly generated ticket numbers here.
                 };
-            
-             axios.post(merchantEndPoint, darajaRequestBody,
-                {
-                 headers:{
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
-                }})
-                .then((res)=>{
-                    console.log(res.raw_body);
-                    resolve(res.raw_body)
-                }).catch((error)=>{
-                    console.log(error);
-                    reject({message: "Transaction Failed", code: `MPESA ERROR: ${error.code}`, error: error})
-                })
+
+                if(!token){
+                    console.log("Token was not generated")
+                    return;
+                }
+
+                const requestHeaders = new Headers()
+                requestHeaders.append('Content-Type', 'application/json')
+                requestHeaders.append('Authorization', `Bearer ${token}`)
+
+                const requestOptions = {
+                    method: "POST",
+                    headers: requestHeaders,
+                    body: darajaRequestBody
+                }
+
+                const request = new Request(merchantEndPoint, requestOptions)
+
+                await fetch(request)
+                    .then((res)=>{
+                        console.log(res.raw_body);
+                        resolve(res.raw_body)
+                    }).catch((error)=>{
+                        console.log(error);
+                        reject({message: "Transaction Failed", code: `MPESA ERROR: ${error.code}`, error: error})
+                    })
                 
             }catch(error){
                 console.error({message: error.message, code: error.code});
@@ -104,7 +127,7 @@ export default class Mpesa{
                 const merchantEndPoint = `${this.url}/mpesa/stkpush/v1/processrequest`; // change the sandbox to api during production
                 const callBackURL = this.callbackURL;
             
-                const timestamp = Timestamp;
+                const timestamp = Timestamp();
     
                 const pass = (businessNumber + mpesaPassword + timestamp);
     
@@ -123,24 +146,45 @@ export default class Mpesa{
                     "AccountReference": account_reference, //`254${phoneNumber}`
                     "TransactionDesc": transaction_desc //Enter your randomly generated ticket numbers here.
                 }
-            
-                return axios.post(merchantEndPoint, darajaRequestBody,
-                    {
-                     headers:{
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${token}`
-                    }})
-                    .then((res)=>{
-                        console.log(res.raw_body);
-                        resolve(res)
-                    }).catch((error)=>{
-                        console.log(error);
-                        reject(error)
-                        throw new Error(error)
-                    });
+
+                const requestHeaders = new Headers()
+                requestHeaders.append("Content-Type", "application/json")
+                requestHeaders.append("Authorization", `Bearer ${token}`)
+
+                const requestOptions = {
+                    method: "POST",
+                    headers: requestHeaders,
+                    body: darajaRequestBody
+                }
+
+                const request = new Request(merchantEndPoint, requestOptions)
+                await fetch(request)
+                        .then((res)=>{
+                            console.log(res.raw_body);
+                            resolve(res)
+                        }).catch((error)=>{
+                            console.log(error);
+                            reject(error)
+                            throw new Error(error)
+                        });
             })
         }catch(error){
             console.error({message: error.message, code: error.code});
         }
     }
+}
+
+function Timestamp(){
+    const date = new Date();
+    
+    const timestamp = (
+        date.getFullYear() +
+        ("0" + (date.getMonth() + 1)).slice(-2) +
+        ("0" + date.getDate()).slice(-2) +
+        ("0" + date.getHours()).slice(-2) +
+        ("0" + date.getMinutes()).slice(-2) +
+        ("0" + date.getSeconds()).slice(-2)
+    );
+
+    return timestamp;
 }

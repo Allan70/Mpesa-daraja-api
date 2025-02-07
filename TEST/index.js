@@ -3,8 +3,8 @@ import mpesa from "daraja-package";
 
 const mobilePay = mpesa({
     callbackURL: "https://mydomain.com/b2b/result/",
-    secret: "kI3K9U23Lgwys7vyjGCGuCAvFoqzwXZuWKVjfCGpeDmPlhh5TgFJXMUGAussXKRe",
-    consumer_key: "Es9jiYGr7QQAgh4V4MPwo0j00sIOxtXN5uGA0JGu002uhzDR"
+    customerSecret: "kI3K9U23Lgwys7vyjGCGuCAvFoqzwXZuWKVjfCGpeDmPlhh5TgFJXMUGAussXKRe",
+    consumerKey: "Es9jiYGr7QQAgh4V4MPwo0j00sIOxtXN5uGA0JGu002uhzDR"
 })
 
 await mobilePay.buyGoods({

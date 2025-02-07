@@ -1,4 +1,4 @@
-export default function timestamp(){
+function timestamp(){
     
     const date = new Date();
     
@@ -13,3 +13,5 @@ export default function timestamp(){
 
     return timestamp;
 }
+
+export { timestamp as default}
