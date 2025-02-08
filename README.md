@@ -10,6 +10,12 @@ The following package allows a developer to interact with M-Pesa's transaction A
 
 You need to create an application at the [daraja API](https://developer.safaricom.co.ke/) platform first before you can use the following package.
 
+![image](https://github.com/user-attachments/assets/06a57226-c573-40ff-a174-618ae95a08e3)
+
+![image](https://github.com/user-attachments/assets/89a41616-a7cd-491e-966b-374ead92198b)
+
+![image](https://github.com/user-attachments/assets/d0f9b95e-dbad-42f6-b80c-9323a954a5bb)
+
 > Daraja API requires requests to be made from a secure HTTPS TLS connection.
 
 We recommend using [ngrok](https://ngrok.com/docs/guides/developer-preview/getting-started/) to achieve a TLS connection on your device.
