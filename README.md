@@ -12,7 +12,7 @@ The following package allows a developer to interact with M-Pesa's transaction A
 
 > Daraja API requires requests to be made from a secure HTTPS TLS connection.
 
-We recommend using `ngrok` to achieve a TLS connection on your device.
+We recommend using [ngrok](https://ngrok.com/docs/guides/developer-preview/getting-started/) to achieve a TLS connection on your device.
 
 For windows you can use
 
@@ -89,7 +89,7 @@ await mpesa.buyGoods({phone, amount, tillNumber, account_reference, transaction_
 
 NOTE: Rember to start a sandbox if you wish to test the API in a developer environment.
 
-### CallbackURL
+## CallbackURL
 URL that will be called once payment call has been made (Successful payment web-page-screen)
 
 A CallBack URL is a valid secure URL that is used to receive notifications from M-Pesa API. It is the endpoint to which the results will be sent by M-Pesa API.
@@ -100,33 +100,33 @@ e.g: https://mydomain.com/path
 
 https://0.0.0.0:9090/path
 
-### Secret
+## Secret
 M-Pesa API `Consumer Secret`
 
 ### Consumer_key
 M-Pesa API product `Consumer Key`
 
-### Mpesa_base_url
+## Mpesa_base_url
 Choosing the base url between the `mpesa sandbox url` and `mpesa production url`.
 
 The default url will be the M-pesa sandbox url if the option is left blank.
 
-### phone
+## Phone
 Mobile phone number to be credited the amount.
 
-### amount
+## Amount
 Amount to be paid via the API call
 
-### payBillNumber
+## PayBill Number
 Paybill number to be debited the amount
 
-### Till Number
+## Till Number
 Till number to be debited the amount
 
-### account_reference
+## Account Reference
 Account Reference: This is an Alpha-Numeric parameter that is defined by your system as an Identifier of the transaction for the CustomerPayBillOnline transaction type. Along with the business name, this value is also displayed to the customer in the STK Pin Prompt message. Maximum of 12 characters.
 
-### transaction_desc
+## Transaction Desc
 This is any additional information/comment that can be sent along with the request from your system. Maximum of 13 Characters.
 
 
