@@ -16,7 +16,7 @@ Install the package into your project you can find the npm package here.
 
 ```sh
 
-npm install @allan70/daraja-package
+npm install daraja-package
 
 
 ```
@@ -27,7 +27,7 @@ To add the package to your project you can use the following import statement
 
 ```js
 
-import Mpesa from "@allan70/daraja-package"
+import Mpesa from "daraja-package"
 
 
 ```
