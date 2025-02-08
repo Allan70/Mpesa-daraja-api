@@ -10,7 +10,7 @@ The following package allows a developer to interact with M-Pesa's transaction A
 
 You need to create an application at the [daraja API](https://developer.safaricom.co.ke/) platform first before you can use the following package.
 
-![image](https://github.com/user-attachments/assets/06a57226-c573-40ff-a174-618ae95a08e3)
+![rft0x1qn](https://github.com/user-attachments/assets/59190850-e628-4c2f-9827-adce977be9be)
 
 ![image](https://github.com/user-attachments/assets/89a41616-a7cd-491e-966b-374ead92198b)
 
