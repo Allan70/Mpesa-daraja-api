@@ -80,18 +80,11 @@ After importing the package into your project you can access the API by followin
 // Call the package
 const mpesa = Mpesa({callbackURL, secret, consumer_key, mpesa_base_url});
 
-/** 
- * Asynchronous methods making API calls under the hood
- *
- * */
-
 // Make payment using M-Pesa paybill 
 await mpesa.paybill({phone, amount, payBillNumber, account_reference, transaction_desc});
 
 //Make Payment using M-Pesa Till number
 await mpesa.buyGoods({phone, amount, tillNumber, account_reference, transaction_desc});
-
-
 ```
 
 NOTE: Rember to start a sandbox if you wish to test the API in a developer environment.
