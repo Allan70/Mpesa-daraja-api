@@ -10,7 +10,10 @@ It's super handy because you can do all these things using just your phone, even
 
 The following package allows a developer to interact with M-Pesa's transaction API to allow Software to make mobile payments. The package only supports `NodeJS` for now. More updates are to be made.
 
-> NOTE! Daraja API requires requests to be made from a secure HTTPS TLS connection. We recommend using `ngrok` to achieve this.
+> Daraja API requires requests to be made from a secure HTTPS TLS connection.
+
+We recommend using `ngrok` to achieve a TLS connection on your device.
+
 For windows you can use
 
 ```sh
