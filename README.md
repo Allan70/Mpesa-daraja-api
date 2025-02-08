@@ -38,7 +38,7 @@ To check whether you have ngrok installed you can run the following command
 ngrok -h
 ```
 
-Ngrok uses an auth token, that requires it's CLI users to log into the `ngrok` platform. You must have an account on (ngrok)[https://ngrok.com].
+Ngrok uses an auth token, that requires it's CLI users to log into the `ngrok` platform. You must have an account on [ngrok]([ngrok](https://ngrok.com)).
 
 Run this command to add the authtoken to your terminal.
 
