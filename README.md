@@ -1,4 +1,4 @@
-# M-pesa API npm package (Testing phase)
+# M-pesa API npm package
 
 This is an npm package intended to streamline the process of adding the M-Pesa Daraja API to your project.
 M-Pesa is like a digital wallet on your phone that lets you send and receive money, pay for things, and even borrow small amounts of money. It works through text messages and is used a lot in Africa.
@@ -24,24 +24,32 @@ For windows you can use
 
 ```sh
 choco install ngrok
+
 ```
+
 For mac OS
+
 ```sh
 brew install ngrok
+
 ```
 
 For Linux use APT
+
 ```sh
 curl -s https://ngrok-agent.s3.amazonaws.com/ngrok.asc | \
   sudo gpg --dearmor -o /etc/apt/keyrings/ngrok.gpg && \
   echo "deb [signed-by=/etc/apt/keyrings/ngrok.gpg] https://ngrok-agent.s3.amazonaws.com buster main" | \
   sudo tee /etc/apt/sources.list.d/ngrok.list && \
   sudo apt update && sudo apt install ngrok
+
 ```
 
 To check whether you have ngrok installed you can run the following command
+
 ```sh
 ngrok -h
+
 ```
 
 Ngrok uses an auth token, that requires it's CLI users to log into the `ngrok` platform. You must have an account on [ngrok](https://ngrok.com).
@@ -50,11 +58,14 @@ Run this command to add the authtoken to your terminal.
 
 ```sh
 ngrok config add-authtoken TOKEN
+
 ```
 
 ## Starting the Ngrok package
+
 ```sh
 ngrok http 8000
+
 ```
 
 Now open the Forwarding URL in your browser and you should see your local web service. At first glance, it may not seem impressive, but there are a few key differences here:
@@ -62,13 +73,15 @@ Now open the Forwarding URL in your browser and you should see your local web se
 That URL is available to anyone in the world. Seriously, test it out by sending it to a friend.
 You are now using TLS (notice the 🔒 in your browser window) with a valid certificate without making any changes to your local service.
 
-
 ## Installing daraja-package
 
 Install the package into your project you can find the npm package here.
 
 ```sh
+
 npm install daraja-package
+
+
 ```
 
 ## Importing the package into your Project
@@ -76,27 +89,49 @@ npm install daraja-package
 To add the package to your project you can use the following import statement
 
 ```js
+
 import Mpesa from "daraja-package"
+
+
 ```
 
 ## Usage
+
 After importing the package into your project you can access the API by following these steps.
 
 ```js
+import mpesa from "daraja-package";
+import * as dotenv from "dotenv"
+dotenv.config()
+
 // Call the package
-const mpesa = Mpesa({callbackURL, secret, consumer_key, mpesa_base_url});
+const mobilePay = mpesa({
+    callbackURL: "https://example.com",
+    consumerSecret: process.env.CONSUMER_SECRET,
+    consumerKey: process.env.CONSUMER_KEY,
+    passKey: process.env.PASS_KEY,
+    mpesaBaseUrl: "DEV"
+})
 
-// Make payment using M-Pesa paybill 
-await mpesa.paybill({phone, amount, payBillNumber, account_reference, transaction_desc});
+await mobilePay.express({
+            phone: "712345678",
+            amount: "20", //KES
+            tillOrPayBillNumber: "174379", // TILLNUMBER OR BUSINESS NUMBER
+            account_reference: "Volant Digital LTD", 
+            transaction_desc: "Buying Apples"
+        }).then((result)=>{
+            console.log(result)
+        }).catch((error)=>{
+            console.error(error)
+        });
 
-//Make Payment using M-Pesa Till number
-await mpesa.buyGoods({phone, amount, tillNumber, account_reference, transaction_desc});
 ```
 
 NOTE: Rember to start a sandbox if you wish to test the API in a developer environment.
 
-## CallbackURL
-URL that will be called once payment call has been made (Successful payment web-page-screen)
+# callbackURL  : URL
+
+URL that will be called once payment call has been made (Successful payment web page/screen)
 
 A CallBack URL is a valid secure URL that is used to receive notifications from M-Pesa API. It is the endpoint to which the results will be sent by M-Pesa API.
 
@@ -106,33 +141,38 @@ e.g: https://mydomain.com/path
 
 https://0.0.0.0:9090/path
 
-## Secret
+# consumerSecret
+
 M-Pesa API `Consumer Secret`
 
-### Consumer_key
+# consumerKey
+
 M-Pesa API product `Consumer Key`
 
-## Mpesa_base_url
-Choosing the base url between the `mpesa sandbox url` and `mpesa production url`.
+# mpesaBaseUrl
+
+Choosing the base url between the `DEV` which uses m-pesa sandbox url and `PRODUCTOPM` which uses the live mpesa api url.
 
 The default url will be the M-pesa sandbox url if the option is left blank.
 
-## Phone
+# phone
+
 Mobile phone number to be credited the amount.
 
-## Amount
+# amount
+
 Amount to be paid via the API call
 
-## PayBill Number
-Paybill number to be debited the amount
+#  tillOrPayBillNumber
 
-## Till Number
-Till number to be debited the amount
+Either a till number or a paybill number
 
-## Account Reference
+# account_reference
+
 Account Reference: This is an Alpha-Numeric parameter that is defined by your system as an Identifier of the transaction for the CustomerPayBillOnline transaction type. Along with the business name, this value is also displayed to the customer in the STK Pin Prompt message. Maximum of 12 characters.
 
-## Transaction Desc
+# transaction_desc
+
 This is any additional information/comment that can be sent along with the request from your system. Maximum of 13 Characters.
 
 

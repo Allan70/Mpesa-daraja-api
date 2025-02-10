@@ -4,10 +4,10 @@ import * as dotenv from "dotenv"
 dotenv.config()
 
 const mobilePay = mpesa({
-    callbackURL: "https://mydomain.com/b2b/result/",
+    callbackURL: "https://commerce-c123c.web.com",
     consumerSecret: process.env.CONSUMER_SECRET,
     consumerKey: process.env.CONSUMER_KEY,
-    passkey: process.env.PASS_KEY,
+    passKey: process.env.PASS_KEY,
     mpesaBaseUrl: "DEV"
 })
 
@@ -22,15 +22,3 @@ await mobilePay.express({
         }).catch((error)=>{
             console.error(error)
         });
-
-// mobilePay.paybill({
-//             phone: "712765337",
-//             amount: "100", //KES
-//             payBillNumber: "3216396",//Paybill Number
-//             account_reference: "Volant Digital", 
-//             transaction_desc: "Buying Apples"
-//         }).then((result)=>{
-//             console.log(result)
-//         }).catch((error)=>{
-//             console.error(error)
-//         });
