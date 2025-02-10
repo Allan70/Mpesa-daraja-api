@@ -117,8 +117,8 @@ await mobilePay.express({
             phone: "712345678",
             amount: "20", //KES
             tillOrPayBillNumber: "174379", // TILLNUMBER OR BUSINESS NUMBER
-            account_reference: "Volant Digital LTD", 
-            transaction_desc: "Buying Apples"
+            account_reference: "Business/Company Name", 
+            transaction_desc: "Buying apples and oranges"
         }).then((result)=>{
             console.log(result)
         }).catch((error)=>{
