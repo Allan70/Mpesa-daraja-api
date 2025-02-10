@@ -1,4 +1,4 @@
-# M-pesa API npm package (Testing phase)
+# M-pesa API npm package
 
 This is an npm package intended to streamline the process of adding the M-Pesa Daraja API to your project.
 
@@ -37,20 +37,30 @@ import Mpesa from "daraja-package"
 After importing the package into your project you can access the API by following these steps.
 
 ```js
+import mpesa from "daraja-package";
+import * as dotenv from "dotenv"
+dotenv.config()
+
 // Call the package
-const mpesa = Mpesa({callbackURL, secret, consumer_key, mpesa_base_url});
+const mobilePay = mpesa({
+    callbackURL: "https://example.com",
+    consumerSecret: process.env.CONSUMER_SECRET,
+    consumerKey: process.env.CONSUMER_KEY,
+    passKey: process.env.PASS_KEY,
+    mpesaBaseUrl: "DEV"
+})
 
-/** 
- * Asynchronous methods making API calls under the hood
- *
- * */
-
-// Make payment using M-Pesa paybill 
-await mpesa.paybill({phone, amount, payBillNumber, account_reference, transaction_desc});
-
-//Make Payment using M-Pesa Till number
-await mpesa.buyGoods({phone, amount, tillNumber, account_reference, transaction_desc});
-
+await mobilePay.express({
+            phone: "712345678",
+            amount: "20", //KES
+            tillOrPayBillNumber: "174379", // TILLNUMBER OR BUSINESS NUMBER
+            account_reference: "Volant Digital LTD", 
+            transaction_desc: "Buying Apples"
+        }).then((result)=>{
+            console.log(result)
+        }).catch((error)=>{
+            console.error(error)
+        });
 
 ```
 
@@ -68,17 +78,17 @@ e.g: https://mydomain.com/path
 
 https://0.0.0.0:9090/path
 
-# secret
+# consumerSecret
 
 M-Pesa API `Consumer Secret`
 
-# consumer_key
+# consumerKey
 
 M-Pesa API product `Consumer Key`
 
-# mpesa_base_url
+# mpesaBaseUrl
 
-Choosing the base url between the `mpesa sandbox url` and `mpesa production url`.
+Choosing the base url between the `DEV` which uses m-pesa sandbox url and `PRODUCTOPM` which uses the live mpesa api url.
 
 The default url will be the M-pesa sandbox url if the option is left blank.
 
@@ -90,13 +100,9 @@ Mobile phone number to be credited the amount.
 
 Amount to be paid via the API call
 
-# payBillNumber
+#  tillOrPayBillNumber
 
-Paybill number to be debited the amount
-
-# Till Number
-
-Till number to be debited the amount
+Either a till number or a paybill number
 
 # account_reference
 

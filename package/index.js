@@ -1,10 +1,10 @@
 import Mpesa from "./Mpesa.js"
 
-function mpesa({callbackURL, consumerSecret, consumerKey, mpesa_base_url}){
-    if(!mpesa_base_url || mpesa_base_url === "")
-        return new Mpesa({callbackURL, consumerSecret, consumerKey })
+function mpesa({callbackURL, consumerSecret, consumerKey, passKey,  mpesaBaseUrl}){
+    if(!mpesaBaseUrl || mpesaBaseUrl === "")
+        return new Mpesa({callbackURL, consumerSecret,consumerKey, passKey})
 
-    return new Mpesa({callbackURL, consumerSecret, consumerKey, mpesa_base_url})
+    return new Mpesa({ callbackURL, consumerSecret, consumerKey, passKey, mpesaBaseUrl})
 }
 
 export { mpesa as default }
