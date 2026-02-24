@@ -264,6 +264,59 @@ export default class Mpesa{
             console.error({message: error.message, code: error.code});
         }
     }
+
+
+    async dynamicQR(){
+    }
+
+    async customerToBusinesss(){
+    }
+
+    async businessToCustomer(){
+    }
+
+    async transactionStatus(){
+    }
+
+    async accountBalance(){
+    }
+
+    async reversals(){
+    }
+
+    async taxremittance(){
+    }
+
+    async businessPayBill(){
+    }
+
+    async businessBuyGoods(){
+    }
+
+    async billManager(){
+    }
+
+    async b2bExpressCheckout(){
+    }
+
+    async pullTransactions(){
+    }
+
+    async businessToPochi(){
+    }
+
+    async b2cAccountTopUp(){
+    }
+
+    async mpesaratiba(){
+    }
+
+    async IoTSimManagement(){
+    }
+
+    async customerToBusinessRegisterURL(){
+    }
+
 }
 
 function Timestamp(){
