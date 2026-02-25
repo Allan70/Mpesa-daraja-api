@@ -178,6 +178,8 @@ export default class Mpesa{
 
     async expressPushQuery(){
         try{
+            return new Promise(async (resolve, reject)=>{
+            });
         }catch(error){
             console.error({
                 message: error.message,
@@ -189,6 +191,8 @@ export default class Mpesa{
 
     async reversal(){
         try{
+            return new Promise(async (resolve, reject)=>{
+            });
         }catch(error){
             console.error({
                 message: error.message,
@@ -199,6 +203,8 @@ export default class Mpesa{
 
     async customerToBusinesss(){
         try{
+            return new Promise(async (resolve, reject)=>{
+            });        
         }catch(error){
             console.error({
                 message: error.message,
@@ -209,6 +215,7 @@ export default class Mpesa{
 
     async customerToBusinessPaybill(){
         try{
+            return new Promise(async (resolve, reject)=>{});
         }catch(error){
             console.error({
                 messsage: error.message,
@@ -219,6 +226,7 @@ export default class Mpesa{
 
     async transactionStatus(){
         try{
+            return new Promise(async (resolve, reject)=>{});
         }catch(error){
             console.error({
                 message: error.message,
@@ -229,6 +237,7 @@ export default class Mpesa{
 
     async accountBalance(){
         try{
+            return new Promise(async (resolve, reject)=>{});
         }catch(error){
             console.error({
                 message: error.message,
@@ -239,6 +248,7 @@ export default class Mpesa{
 
     async businessToCustomer(){
         try{
+            return new Promise(async (resolve, reject)=>{});
         }catch(error){
             console.error({
                 message: error.message,
@@ -249,6 +259,7 @@ export default class Mpesa{
 
     async businessToCustomerTransactionStatus(){
         try{
+            return new Promise(async (resolve, reject)=>{});
         }catch(error){
             console.error({
                 message: error.message,
@@ -259,6 +270,7 @@ export default class Mpesa{
 
     async businessToCustomerAccountBalance(){
         try{
+            return new Promise(async (resolve, reject)=>{});
         }catch(error){
             console.error({
                 message: error.message,
@@ -269,6 +281,7 @@ export default class Mpesa{
 
     async businessToBusinessBuyGoods(){
         try{
+            return new Promise(async (resolve, reject)=>{});
         }catch(error){
             console.error({
                 message: error.message,
@@ -279,6 +292,7 @@ export default class Mpesa{
 
     async businessToBusinessPaybill(){
         try{
+            return new Promise(async (resolve, reject)=>{});
         }catch(error){
             console.error({
                 message: error.message,
@@ -289,6 +303,7 @@ export default class Mpesa{
 
     async businessToBusinessAccountTopup(){
         try{
+            return new Promise(async (resolve, reject)=>{});
         }catch(error){
             console.error({
                 message: error.message,
@@ -299,6 +314,7 @@ export default class Mpesa{
 
     async dynamicQRCode(){
         try{
+            return new Promise(async (resolve, reject)=>{});
         }catch(error){
             console.error({
                 message: error.message,
@@ -309,6 +325,7 @@ export default class Mpesa{
 
     async billManagerInvoiceOptin(){
         try{
+            return new Promise(async (resolve, reject)=>{});
         }catch(error){
             console.error({
                 message: error.message,
@@ -319,6 +336,7 @@ export default class Mpesa{
 
     async billManagerSingleInvoicing(){
         try{
+            return new Promise(async (resolve, reject)=>{});
         }catch(error){
             console.error({
                 message: error.message,
@@ -329,6 +347,7 @@ export default class Mpesa{
 
     async billManagerBulkInvoicing(){
         try{
+            return new Promise(async (resolve, reject)=>{});
         }catch(error){
             console.error({
                 message: error.message,
@@ -339,6 +358,7 @@ export default class Mpesa{
 
     async billManagerReconciliation(){
         try{
+            return new Promise(async (resolve, reject)=>{});
         }catch(error){
             console.error({
                 message: error.message,
@@ -349,6 +369,7 @@ export default class Mpesa{
 
     async billManagerCancelSingleInvoicing(){
         try{
+            return new Promise(async (resolve, reject)=>{});
         }catch(error){
             console.error({
                 message: error.message,
@@ -359,6 +380,7 @@ export default class Mpesa{
 
     async billManagerCancelBulkInvoicing(){
         try{
+            return new Promise(async (resolve, reject)=>{});
         }catch(error){
             console.error({
                 message: error.message,
@@ -369,6 +391,7 @@ export default class Mpesa{
 
     async billManagerUpdateOnBoardingdetails(){
         try{
+            return new Promise(async (resolve, reject)=>{});
         }catch(error){
             console.error({
                 message: error.message,
@@ -379,6 +402,7 @@ export default class Mpesa{
 
     async billManagerUpdateSingleInvoicing(){
         try{
+            return new Promise(async (resolve, reject)=>{});
         }catch(error){
             console.error({
                 message: error.message,
@@ -389,6 +413,7 @@ export default class Mpesa{
 
     async billManagerUpdateBulkInvoicing(){
         try{
+            return new Promise(async (resolve, reject)=>{});
         }catch(error){
             console.error({
                 message: error.message,
