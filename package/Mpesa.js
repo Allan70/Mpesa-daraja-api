@@ -5,6 +5,44 @@ export default class Mpesa{
         this.secret = consumerSecret;
         this.consumer_key = consumerKey;
         this.mpesaPassword = passKey
+        this.urls = {
+            auth_token: "/oauth/v1/generate",
+            // Reversal
+            reversal: "/mpesa/reversal/v1/request",
+            // C2B 
+            c2b_v2: "/mpesa/c2b/v2/registerurl",
+            c2b_transaction_status: "/mpesa/transactionstatus/v1/query",
+            // C2B PayBill
+            c2b_paybill_v1: "/mpesa/c2b/v1/registerurl",
+            c2b_paybill_transaction_status: "/mpesa/transactionstatus/v1/query",
+            // Transaction status
+            transaction_status: "/mpesa/transactionstatus/v1/query",
+            // Account Balance
+            account_balance: "/mpesa/accountbalance/v1/query",
+            // B2C
+            b2c: "/mpesa/b2c/v1/paymentrequest",
+            b2c_transaction_status: "/mpesa/transactionstatus/v1/query",
+            b2c_account_balance: "/mpesa/accountbalance/v1/query",
+            // M-PESA Express (Lipa na M-Pesa Production)
+            express_stk_push: "/mpesa/stkpush/v1/processrequest",
+            express_stk_push_query: "/mpesa/stkpushquery/v1/query",
+            // B2B
+            b2b_buygoods: "/mpesa/b2b/v1/paymentrequest", 
+            b2b_paybill: "/mpesa/b2b/v1/paymentrequest",
+            b2c_account_topup: "/mpesa/b2b/v1/paymentrequest",
+            // Dynamic QR
+            dynamicQR_code: "/mpesa/qrcode/v1/generate",
+            // Bill Manager Generic API
+            bill_manager_invoice_optin: "/v1/billmanager-invoice/v1/billmanager-invoice/optin",
+            bill_manager_single_invoicing: "/v1/billmanager-invoice/v1/billmanager-invoice/single-invoicing",
+            bill_manager_bulk_invoicing: "/v1/billmanager-invoice/v1/billmanager-invoice/bulk-invoicing",
+            bill_manager_reconciliation: "/v1/billmanager-invoice/v1/billmanager-invoice/reconciliation",
+            bill_manager_cancel_single_invoicing: "/v1/billmanager-invoice/v1/billmanager-invoice/cancel-single-invoice",
+            bill_manager_cancel_bulk_invoicing: "/v1/billmanager-invoice/v1/billmanager-invoice/cancel-bulk-invoice",
+            bill_manager_update_onboarding_details: "/v1/billmanager-invoice/v1/billmanager-invoice/change-optin-details",
+            bill_manager_update_single_invoicing: "/v1/billmanager-invoice/v1/billmanager-invoice/change-invoice",
+            bill_manager_update_bulk_invoicing: "/v1/billmanager-invoice/v1/billmanager-invoice/change-invoices"
+        }
 
         switch(mpesaBaseUrl){
             case "DEV":
@@ -33,7 +71,7 @@ export default class Mpesa{
         try{
             const secretGen = this.secret;
             const consumerKeyGen = this.consumer_key;
-            const token_url = `${this.url}/oauth/v1/generate?grant_type=client_credentials`;
+            const token_url = `${this.url}${this.urls.auth_token}?grant_type=client_credentials`;
         
             console.log(token_url)
             const auth = new Buffer.from(`${consumerKeyGen}:${secretGen}`).toString("base64");
@@ -68,134 +106,7 @@ export default class Mpesa{
             console.error("MPESA generate token function error:", error)
             throw new Error(error)
         }
-    }
-
-    async paybill({phone, amount, payBillNumber, account_reference, transaction_desc}){
-        
-        return new Promise(async (resolve, reject)=>{
-            try{
-                const token = this.generateToken();
-                const phoneNumber = phone; //Starts with 254 eg. 254708374149
-                const amountFromUser = amount;
-                const businessNumber = payBillNumber; //your paybill
-                const mpesaPassword = this.mpesaPassword;
-                const merchantEndPoint = `${this.url}/mpesa/stkpush/v1/processrequest`; // change the sandbox to api during production
-                const callBackURL = this.callbackURL;
-            
-                const timestamp = Timestamp();
-    
-                const pass = (businessNumber + mpesaPassword + timestamp);
-    
-                const passwordSaf = btoa(pass);
-            
-                const darajaRequestBody = {
-                    "BusinessShortCode": parseInt(businessNumber),
-                    "Password": passwordSaf,
-                    "Timestamp": timestamp,
-                    "TransactionType": "CustomerPayBillOnline", 
-                    "Amount": parseInt(amountFromUser),
-                    "PartyA": parseInt(`254${phoneNumber}`),
-                    "PartyB": parseInt(businessNumber),
-                    "PhoneNumber": parseInt(`254${phoneNumber}`),
-                    "CallBackURL": callBackURL,
-                    "AccountReference": account_reference, //`254${phoneNumber}`
-                    "TransactionDesc": transaction_desc //Enter your randomly generated ticket numbers here.
-                };
-
-                if(!token){
-                    console.log("Token was not generated")
-                    return;
-                }
-
-                const requestHeaders = new Headers()
-                requestHeaders.append('Content-Type', 'application/json')
-                requestHeaders.append('Authorization', `Bearer ${token}`)
-
-                const requestOptions = {
-                    method: "POST",
-                    headers: requestHeaders,
-                    body: darajaRequestBody
-                }
-
-                const request = new Request(merchantEndPoint, requestOptions)
-
-                const response = await fetch(request)
-                if(response.error)
-                {
-                    console.log("Paybill error:", response.error)
-                    reject(response.error)
-                    return;
-                }
-
-                const data = await response.json() 
-                
-                console.log("BuyGoods success:", data)
-                resolve(data)
-                return;
-            }catch(error){
-                console.error({message: error.message, code: error.code});
-                reject({message: error.message, code: error.code})
-                throw new Error(error)
-            }
-        })
-    }
-
-    async buyGoods({phone, amount, tillNumber, account_reference, transaction_desc}){
-        try{
-            return new Promise(async (resolve, reject)=>{
-                const token = await this.generateToken()
-                const phoneNumber = phone; //Starts with 254 eg. 254708374149
-                const amountFromUser = amount;
-                const businessNumber = tillNumber; //your paybill
-                const mpesaPassword = this.mpesaPassword;
-                // const merchantEndPoint = `${this.url}/mpesa/stkpush/v1/processrequest`; // change the sandbox to api during production
-                const merchantEndPoint = `${this.url}/mpesa/c2b/v1/simulate`; // change the sandbox to api during production
-                const callBackURL = this.callbackURL;
-            
-                const timestamp = Timestamp();
-    
-                const pass = (businessNumber + mpesaPassword + timestamp);
-    
-                const passwordSaf = btoa(pass);
-        
-
-                const darajaRequestBody = {
-                    "ShortCode": parseInt(tillNumber),
-                    "CommandID": "CustomerBuyGoodsOnline",
-                    "Amount": `${amountFromUser}`,
-                    "Msisdn": `254${phoneNumber}`,
-                    "BillRefNumber": `NULL`,
-                }
-                
-                const requestHeaders = new Headers()
-                requestHeaders.append("Content-Type", "application/json")
-                requestHeaders.append("Authorization", `Bearer ${token}`)
-
-                const requestOptions = {
-                    method: "POST",
-                    headers: requestHeaders,
-                    body: JSON.stringify(darajaRequestBody)
-                }
-
-                const request = new Request(merchantEndPoint, requestOptions)
-                const response = await fetch(request)
-                if(response.error)
-                {
-                    console.log("Buygoods error:", response.error)
-                    reject(response.error)
-                    return;
-                }
-
-                const data = await response.json() 
-                
-                console.log("BuyGoods success:", data)
-                resolve(data)
-                return;
-            })
-        }catch(error){
-            console.error({message: error.message, code: error.code});
-        }
-    }
+    }           
 
     async express({phone, amount, tillOrPayBillNumber, account_reference, transaction_desc}){
         try{
@@ -206,7 +117,7 @@ export default class Mpesa{
                 const businessNumber = tillOrPayBillNumber; //your paybill
                 const mpesaPassword = this.mpesaPassword;
                 // const merchantEndPoint = `${this.url}/mpesa/stkpush/v1/processrequest`; // change the sandbox to api during production
-                const merchantEndPoint = `${this.url}/mpesa/stkpush/v1/processrequest`; // change the sandbox to api during production
+                const merchantEndPoint = `${this.url}${this.urls.express_stk_push}`; // change the sandbox to api during production
                 const callBackURL = this.callbackURL;
             
                 const timestamp = Timestamp();
@@ -265,57 +176,227 @@ export default class Mpesa{
         }
     }
 
+    async expressPushQuery(){
+        try{
+        }catch(error){
+            console.error({
+                message: error.message,
+                code: error.code
+            })
+        }
+    }
 
-    async dynamicQR(){
+
+    async reversal(){
+        try{
+        }catch(error){
+            console.error({
+                message: error.message,
+                code: error.code
+            })
+        }
     }
 
     async customerToBusinesss(){
+        try{
+        }catch(error){
+            console.error({
+                message: error.message,
+                code: error.code
+            })
+        }
     }
 
-    async businessToCustomer(){
+    async customerToBusinessPaybill(){
+        try{
+        }catch(error){
+            console.error({
+                messsage: error.message,
+                code: error.code
+            })
+        }
     }
 
     async transactionStatus(){
+        try{
+        }catch(error){
+            console.error({
+                message: error.message,
+                code: error.code
+            })
+        }
     }
 
     async accountBalance(){
+        try{
+        }catch(error){
+            console.error({
+                message: error.message,
+                code: error.code
+            })
+        }
     }
 
-    async reversals(){
+    async businessToCustomer(){
+        try{
+        }catch(error){
+            console.error({
+                message: error.message,
+                code: error.code
+            })
+        }
     }
 
-    async taxremittance(){
+    async businessToCustomerTransactionStatus(){
+        try{
+        }catch(error){
+            console.error({
+                message: error.message,
+                code: error.code
+            })
+        }
     }
 
-    async businessPayBill(){
+    async businessToCustomerAccountBalance(){
+        try{
+        }catch(error){
+            console.error({
+                message: error.message,
+                code: error.code
+            })
+        }
     }
 
-    async businessBuyGoods(){
+    async businessToBusinessBuyGoods(){
+        try{
+        }catch(error){
+            console.error({
+                message: error.message,
+                code: error.code
+            })
+        }
     }
 
-    async billManager(){
+    async businessToBusinessPaybill(){
+        try{
+        }catch(error){
+            console.error({
+                message: error.message,
+                code: error.code
+            })
+        }
     }
 
-    async b2bExpressCheckout(){
+    async businessToBusinessAccountTopup(){
+        try{
+        }catch(error){
+            console.error({
+                message: error.message,
+                code: error.code
+            })
+        }
     }
 
-    async pullTransactions(){
+    async dynamicQRCode(){
+        try{
+        }catch(error){
+            console.error({
+                message: error.message,
+                code: error.code
+            })
+        }
     }
 
-    async businessToPochi(){
+    async billManagerInvoiceOptin(){
+        try{
+        }catch(error){
+            console.error({
+                message: error.message,
+                code: error.code
+            })
+        }
     }
 
-    async b2cAccountTopUp(){
+    async billManagerSingleInvoicing(){
+        try{
+        }catch(error){
+            console.error({
+                message: error.message,
+                code: error.code
+            })
+        }
     }
 
-    async mpesaratiba(){
+    async billManagerBulkInvoicing(){
+        try{
+        }catch(error){
+            console.error({
+                message: error.message,
+                code: error.code
+            })
+        }
     }
 
-    async IoTSimManagement(){
+    async billManagerReconciliation(){
+        try{
+        }catch(error){
+            console.error({
+                message: error.message,
+                code: error.code
+            })
+        }
     }
 
-    async customerToBusinessRegisterURL(){
+    async billManagerCancelSingleInvoicing(){
+        try{
+        }catch(error){
+            console.error({
+                message: error.message,
+                code: error.code
+            })
+        }
     }
+
+    async billManagerCancelBulkInvoicing(){
+        try{
+        }catch(error){
+            console.error({
+                message: error.message,
+                code: error.code
+            })
+        }
+    }
+
+    async billManagerUpdateOnBoardingdetails(){
+        try{
+        }catch(error){
+            console.error({
+                message: error.message,
+                code: error.code
+            })
+        }
+    }
+
+    async billManagerUpdateSingleInvoicing(){
+        try{
+        }catch(error){
+            console.error({
+                message: error.message,
+                code: error.code
+            })
+        }
+    }
+
+    async billManagerUpdateBulkInvoicing(){
+        try{
+        }catch(error){
+            console.error({
+                message: error.message,
+                code: error.code
+            })
+        }
+    }
+
 
 }
 
