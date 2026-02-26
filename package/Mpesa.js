@@ -108,23 +108,27 @@ export default class Mpesa{
         }
     }           
 
+    /**
+        *
+        * LIPA NA M-PESA ONLINE API also known as M-PESA express is a Merchant/Business initiated C2B (Customer to Business) transaction.
+        *
+    **/
     async express({phone, amount, tillOrPayBillNumber, account_reference, transaction_desc}){
         try{
+
+            if(typeof account_reference != 'string' && account_reference.length > 13){
+                throw new Error("Account reference should not exceed 13 characters");
+            }
+
             return new Promise(async (resolve, reject)=>{
                 const token = await this.generateToken()
+                const merchantEndPoint = `${this.url}${this.urls.express_stk_push}`;
                 const phoneNumber = phone; //Starts with 254 eg. 254708374149
                 const amountFromUser = amount;
-                const businessNumber = tillOrPayBillNumber; //your paybill
-                const mpesaPassword = this.mpesaPassword;
-                // const merchantEndPoint = `${this.url}/mpesa/stkpush/v1/processrequest`; // change the sandbox to api during production
-                const merchantEndPoint = `${this.url}${this.urls.express_stk_push}`; // change the sandbox to api during production
+                const businessNumber = tillOrPayBillNumber; //your paybill            
                 const callBackURL = this.callbackURL;
-            
-                const timestamp = Timestamp();
-    
-                const pass = (businessNumber + mpesaPassword + timestamp);
-    
-                const passwordSaf = btoa(pass);
+                const timestamp = Timestamp()
+                const passwordSaf = this.encrypted_passkey(businessNumber, timestamp);
             
                 console.log("businessNumber:", businessNumber)
                 console.log("passKey:", mpesaPassword)
@@ -142,7 +146,7 @@ export default class Mpesa{
                     "PartyB": parseInt(businessNumber),
                     "PhoneNumber": parseInt(`254${phoneNumber}`),
                     "CallBackURL": callBackURL,
-                    "AccountReference": account_reference, //`254${phoneNumber}`
+                    "AccountReference": account_reference,//`254${phoneNumber}`
                     "TransactionDesc": transaction_desc //Enter your randomly generated ticket numbers here.
                 }
 
@@ -168,6 +172,7 @@ export default class Mpesa{
                 const data = await response.json() 
                 
                 console.log("BuyGoods success:", data)
+                
                 resolve(data)
                 return;
             })
@@ -176,10 +181,54 @@ export default class Mpesa{
         }
     }
 
-    async expressPushQuery(){
+    /**
+        *
+        * Use this method to check the status of a Lipa Na M-Pesa Online Payment.
+        *
+    **/
+    async expressPushQuery({ tillOrPayBillNumber, CheckoutRequestID }){
         try{
             return new Promise(async (resolve, reject)=>{
+
+                if(typeof CheckoutRequestID != 'string')
+                    throw new Error("Invalid CheckoutRequestID type")
+
                 const token = await this.generateToken();
+                const merchantEndpoint = `${this.url}${this.urls.express_stk_push_query}`
+                const businessNumber = parseInt(`${tillOrPayBillNumber}`);
+                const timestamp = Timestamp();
+                const passwordSaf = this.encrypted_passkey(businessNumber, timestamp);
+
+                const darajaRequestBody  = {
+                      "BusinessShortCode": businessNumber,    
+                      "Password": passwordSaf,    
+                       "Timestamp": timestamp,    
+                       "CheckoutRequestID": CheckoutRequestID,   
+                }
+
+                const requestHeaders =  new Headers();
+                requestHeaders.append("Content-Type", "application.json");
+                requestHeaders.append("Authorization", `Bearer ${token}`);
+
+                const requestOptions = {
+                    method: "POST", 
+                    headers: requestHeaders,
+                    body: JSON.stringify(darajaRequestBody)
+                }
+
+                const request = new Request(merchantEndpoint, requestOptions);
+                const response = await fetch(request);
+                if(response.error){
+                    console.log("Express PUSH Query Error");
+                    reject(response.error);
+                    return;
+                }
+
+                const data = await response.json();
+                console.log("Express PUSH Query Success");
+                resolve(data);
+                return;
+                
             });
         }catch(error){
             console.error({
@@ -190,10 +239,93 @@ export default class Mpesa{
     }
 
 
-    async reversal(){
+    /**
+        * 
+        * reversals method enables the reversal of Customer-to-Business (C2B) transactions.
+        *
+    **/
+    async reversal({
+        mpesa_business_username,
+        shortCode,
+        amount,
+        remarks,
+        timeoutURL, 
+        resultURL,
+        transactionID
+
+    }){
         try{
+            if(!mpesa_business_username || typeof mpesa_business_username != 'string' || !`^[a-zA-Z0-9]{5,20}$`.test(mpesa_business_username))
+                throw new Error('Invalid mpesa business username');
+
+            if(typeof remarks != 'string')
+                throw new Error("Invalid remarks type");
+
+            if(remarks.length > 100)
+                throw new Error("Remarks is too long.");
+
+            if(typeof timeoutURL != 'string' || !`/^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\\\w \.-]*)*\/?`.test(timeoutURL))
+                throw new Error("Invalid Time Out URL");
+
+            if(typeof resultURL != 'string' || `/^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\\\w \.-]*)*\/?`.test(resultURL))
+                throw new Error("Invalid result URL");
+
+            if(!transactionID)
+                throw new Error("Transaction ID is required.");
+
+            if(typeof transactionID != 'string')
+                throw new Error("Invalid transaction ID type");
+
+            if(isNaN(parseInt(`${amount}`)))
+                throw new Error("Invalid amount");
+
             return new Promise(async (resolve, reject)=>{
                 const token = await this.generateToken();
+                const merchantEndpoint = `${this.url}${this.urls.reversal}`;
+                const businessNumber = parseInt(`${shortCode}`);
+                const amount_value = parseInt(amount);
+                const passwordSaf = this.encrypted_passkey(businessNumber);
+
+                if(amount_value <= 0)
+                    throw new Error("Invalid amount");
+
+                const darajaRequestBody = {
+                    "Initiator": `${mpesa_business_username}`,
+                    "SecurityCredential": passwordSaf,
+                    "CommandID": "TransactionReversal",
+                    "TransactionID": transactionID,
+                    "Amount": `${amount_value}`,
+                    "ReceiverParty": businessNumber,
+                    "RecieverIdentifierType": "11",
+                    "ResultURL": resultURL,//"https://mydomain.com/reversal/result",
+                    "QueueTimeOutURL": timeoutURL,//"https://mydomain.com/reversal/queue"
+                    "Remarks": remarks
+                }
+
+                const requestHeaders = new Headers();
+                requestHeaders.append("Content-Type", "application/json");
+                requestHeaders.append("Authorization", `Bearer ${token}`);
+
+                const requestOptions = {
+                    method: "POST",
+                    headers: requestHeaders,
+                    body: JSON.stringify(darajaRequestBody)
+                }
+
+                const request = new Request(merchantEndpoint, requestOptions);
+                const response = await fetch(request);
+                if(response.error){
+                    console.error("M-Pesa Reversal Error:", response.error);
+                    reject(response.error);
+                    return;
+                }
+
+                const data = await response.json()
+                // Any response code other than 0 is an error
+                console.log("Successfully sent reversal request:", data);
+                resolve(data)
+                return;
+
             });
         }catch(error){
             console.error({
@@ -203,10 +335,43 @@ export default class Mpesa{
         }
     }
 
+    /**
+        * Customer to Business Automate delivery of M-PESA payment 
+        * notifications to applications, websites, and ERP systems for 
+        * real-time updates.
+        *
+        * Customer to Business (C2B) API, also known as the Register URL API, 
+        * enables merchants to receive notifications for successful payments 
+        * to their Paybill or Till numbers. Funds originate from the customer 
+        * wallet and are transferred to the merchant’s short code.
+        *
+        * Payments can be initiated via SIM Toolkit, Mpesa App, Safaricom App, 
+        * USSD, NI Push API, or Dynamic QR Code API.
+        *
+        * Use publicly available IP addresses or domain names.
+        * Production URLs must be HTTPS; Sandbox allows HTTP.
+        * Avoid keywords like M-PESA, Safaricom, exe, exec, cmd, SQL, query, 
+        * etc., in URLs.
+        * Do not use public URL testers (e.g., ngrok, mockbin, requestbin) in 
+        * production.
+        *
+        * Note: On the sandbox, you are free to register your URLs multiple 
+        * times or even overwrite the existing ones. In the production 
+        * environment, this is a one-time API call that registers your 
+        * validation and confirmation URLs to have them changed you can 
+        * delete them on the URL management tab under self-service and 
+        * re-register using register URL API, you can also email us at 
+        * apisupport@safaricom.co.ke for assistance.
+        *
+        * Note: As you set up the default value, the words 
+        * "Cancelled/Completed" must be in sentence case and well-spelled.
+        *
+    * */
     async customerToBusinesss(){
         try{
             return new Promise(async (resolve, reject)=>{
                 const token = await this.generateToken();
+                const merchantEndpoint = `${this.url}${this.urls.c2b_v2}`
             });        
         }catch(error){
             console.error({
@@ -220,6 +385,7 @@ export default class Mpesa{
         try{
             return new Promise(async (resolve, reject)=>{
                 const token = await this.generateToken();
+                const merchantEndpoint = `${this.url}${this.urls.c2b_paybill_v1}`
             });
         }catch(error){
             console.error({
@@ -233,6 +399,7 @@ export default class Mpesa{
         try{
             return new Promise(async (resolve, reject)=>{
                 const token = await this.generateToken();
+                const merchantEndpoint = `${this.url}${this.urls.transaction_status}`
             });
         }catch(error){
             console.error({
@@ -246,6 +413,7 @@ export default class Mpesa{
         try{
             return new Promise(async (resolve, reject)=>{
                 const token = await this.generateToken();
+                const merchantEndpoint = `${this.url}${this.urls.account_balance}`
             });
         }catch(error){
             console.error({
@@ -259,6 +427,7 @@ export default class Mpesa{
         try{
             return new Promise(async (resolve, reject)=>{
                 const token = await this.generateToken();
+                const merchantEndpoint = `${this.url}${this.urls.b2c}`
             });
         }catch(error){
             console.error({
@@ -272,6 +441,7 @@ export default class Mpesa{
         try{
             return new Promise(async (resolve, reject)=>{
                 const token = await this.generateToken();
+                const merchantEndpoint = `${this.url}${this.urls.b2c_transaction_status}`
             });
         }catch(error){
             console.error({
@@ -285,6 +455,7 @@ export default class Mpesa{
         try{
             return new Promise(async (resolve, reject)=>{
                 const token = await this.generateToken();
+                const merchantEndpoint = `${this.url}${this.urls.b2c_account_balance}`
             });
         }catch(error){
             console.error({
@@ -298,6 +469,7 @@ export default class Mpesa{
         try{
             return new Promise(async (resolve, reject)=>{
                 const token = await this.generateToken();
+                const merchantEndpoint = `${this.url}${this.urls.b2b_buygoods}`
             });
         }catch(error){
             console.error({
@@ -311,6 +483,7 @@ export default class Mpesa{
         try{
             return new Promise(async (resolve, reject)=>{
                 const token = await this.generateToken();
+                const merchantEndpoint = `${this.url}${this.urls.b2b_paybill}`
             });
         }catch(error){
             console.error({
@@ -320,10 +493,11 @@ export default class Mpesa{
         }
     }
 
-    async businessToBusinessAccountTopup(){
+    async businessToCustomerAccountTopup(){
         try{
             return new Promise(async (resolve, reject)=>{
                 const token = await this.generateToken();
+                const merchantEndpoint = `${this.url}${this.urls.b2c_account_topup}`
             });
         }catch(error){
             console.error({
@@ -337,6 +511,7 @@ export default class Mpesa{
         try{
             return new Promise(async (resolve, reject)=>{
                 const token = await this.generateToken();
+                const merchantEndpoint = `${this.url}${this.urls.dynamicQR_code}`
             });
         }catch(error){
             console.error({
@@ -350,6 +525,7 @@ export default class Mpesa{
         try{
             return new Promise(async (resolve, reject)=>{
                 const token = await this.generateToken();
+                const merchantEndpoint = `${this.url}${this.urls.bill_manager_invoice_optin}`
             });
         }catch(error){
             console.error({
@@ -363,6 +539,7 @@ export default class Mpesa{
         try{
             return new Promise(async (resolve, reject)=>{
                 const token = await this.generateToken();
+                const merchantEndpoint = `${this.url}${this.urls.bill_manager_single_invoicing}`
             });
         }catch(error){
             console.error({
@@ -376,6 +553,7 @@ export default class Mpesa{
         try{
             return new Promise(async (resolve, reject)=>{
                 const token = await this.generateToken();
+                const merchantEndpoint = `${this.url}${this.urls.bill_manager_bulk_invoicing}`
             });
         }catch(error){
             console.error({
@@ -389,6 +567,7 @@ export default class Mpesa{
         try{
             return new Promise(async (resolve, reject)=>{
                 const token = await this.generateToken();
+                const merchantEndpoint = `${this.url}${this.urls.bill_manager_reconciliation}`
             });
         }catch(error){
             console.error({
@@ -402,6 +581,7 @@ export default class Mpesa{
         try{
             return new Promise(async (resolve, reject)=>{
                 const token = await this.generateToken();
+                const merchantEndpoint = `${this.url}${this.urls.bill_manager_cancel_single_invoicing}`;
             });
         }catch(error){
             console.error({
@@ -415,6 +595,7 @@ export default class Mpesa{
         try{
             return new Promise(async (resolve, reject)=>{
                 const token = await this.generateToken();
+                const merchantEndpoint = `${this.url}${this.urls.bill_manager_cancel_bulk_invoicing}`
             });
         }catch(error){
             console.error({
@@ -428,6 +609,7 @@ export default class Mpesa{
         try{
             return new Promise(async (resolve, reject)=>{
                 const token = await this.generateToken();
+                const merchantEndpoint = `${this.url}${this.urls.bill_manager_update_onboarding_details}`
             });
         }catch(error){
             console.error({
@@ -441,6 +623,7 @@ export default class Mpesa{
         try{
             return new Promise(async (resolve, reject)=>{
                 const token = await this.generateToken();
+                const merchantEndpoint = `${this.url}${this.urls.bill_manager_single_invoicing}`
             });
         }catch(error){
             console.error({
@@ -454,6 +637,7 @@ export default class Mpesa{
         try{
             return new Promise(async (resolve, reject)=>{
                 const token = await this.generateToken();
+                const merchantEndpoint = `${this.url}${this.urls.bill_manager_bulk_invoicing}`
             });
         }catch(error){
             console.error({
@@ -463,6 +647,13 @@ export default class Mpesa{
         }
     }
 
+    encrypted_passkey(businessNumber, timeStamp){
+        const mpesaPassword = this.mpesaPassword;
+        const timestamp  = timeStamp || Timestamp();
+        const pass = (businessNumber + mpesaPassword + timestamp)
+        const passwordSaf = btoa(pass);
+        return passwordSaf;
+    }
 
 }
 
