@@ -69,8 +69,8 @@ export default class Mpesa{
 
     async generateToken(){
         try{
-            const secretGen = this.secret;
-            const consumerKeyGen = this.consumer_key;
+            const secretGen = this.secret;// consumer Secret
+            const consumerKeyGen = this.consumer_key;// Consumer Key
             const token_url = `${this.url}${this.urls.auth_token}?grant_type=client_credentials`;
         
             console.log(token_url)
@@ -179,6 +179,7 @@ export default class Mpesa{
     async expressPushQuery(){
         try{
             return new Promise(async (resolve, reject)=>{
+                const token = await this.generateToken();
             });
         }catch(error){
             console.error({
@@ -192,6 +193,7 @@ export default class Mpesa{
     async reversal(){
         try{
             return new Promise(async (resolve, reject)=>{
+                const token = await this.generateToken();
             });
         }catch(error){
             console.error({
@@ -204,6 +206,7 @@ export default class Mpesa{
     async customerToBusinesss(){
         try{
             return new Promise(async (resolve, reject)=>{
+                const token = await this.generateToken();
             });        
         }catch(error){
             console.error({
@@ -215,7 +218,9 @@ export default class Mpesa{
 
     async customerToBusinessPaybill(){
         try{
-            return new Promise(async (resolve, reject)=>{});
+            return new Promise(async (resolve, reject)=>{
+                const token = await this.generateToken();
+            });
         }catch(error){
             console.error({
                 messsage: error.message,
@@ -226,7 +231,9 @@ export default class Mpesa{
 
     async transactionStatus(){
         try{
-            return new Promise(async (resolve, reject)=>{});
+            return new Promise(async (resolve, reject)=>{
+                const token = await this.generateToken();
+            });
         }catch(error){
             console.error({
                 message: error.message,
@@ -237,7 +244,9 @@ export default class Mpesa{
 
     async accountBalance(){
         try{
-            return new Promise(async (resolve, reject)=>{});
+            return new Promise(async (resolve, reject)=>{
+                const token = await this.generateToken();
+            });
         }catch(error){
             console.error({
                 message: error.message,
@@ -248,7 +257,9 @@ export default class Mpesa{
 
     async businessToCustomer(){
         try{
-            return new Promise(async (resolve, reject)=>{});
+            return new Promise(async (resolve, reject)=>{
+                const token = await this.generateToken();
+            });
         }catch(error){
             console.error({
                 message: error.message,
@@ -259,7 +270,9 @@ export default class Mpesa{
 
     async businessToCustomerTransactionStatus(){
         try{
-            return new Promise(async (resolve, reject)=>{});
+            return new Promise(async (resolve, reject)=>{
+                const token = await this.generateToken();
+            });
         }catch(error){
             console.error({
                 message: error.message,
@@ -270,7 +283,9 @@ export default class Mpesa{
 
     async businessToCustomerAccountBalance(){
         try{
-            return new Promise(async (resolve, reject)=>{});
+            return new Promise(async (resolve, reject)=>{
+                const token = await this.generateToken();
+            });
         }catch(error){
             console.error({
                 message: error.message,
@@ -281,7 +296,9 @@ export default class Mpesa{
 
     async businessToBusinessBuyGoods(){
         try{
-            return new Promise(async (resolve, reject)=>{});
+            return new Promise(async (resolve, reject)=>{
+                const token = await this.generateToken();
+            });
         }catch(error){
             console.error({
                 message: error.message,
@@ -292,7 +309,9 @@ export default class Mpesa{
 
     async businessToBusinessPaybill(){
         try{
-            return new Promise(async (resolve, reject)=>{});
+            return new Promise(async (resolve, reject)=>{
+                const token = await this.generateToken();
+            });
         }catch(error){
             console.error({
                 message: error.message,
@@ -303,7 +322,9 @@ export default class Mpesa{
 
     async businessToBusinessAccountTopup(){
         try{
-            return new Promise(async (resolve, reject)=>{});
+            return new Promise(async (resolve, reject)=>{
+                const token = await this.generateToken();
+            });
         }catch(error){
             console.error({
                 message: error.message,
@@ -314,7 +335,9 @@ export default class Mpesa{
 
     async dynamicQRCode(){
         try{
-            return new Promise(async (resolve, reject)=>{});
+            return new Promise(async (resolve, reject)=>{
+                const token = await this.generateToken();
+            });
         }catch(error){
             console.error({
                 message: error.message,
@@ -325,7 +348,9 @@ export default class Mpesa{
 
     async billManagerInvoiceOptin(){
         try{
-            return new Promise(async (resolve, reject)=>{});
+            return new Promise(async (resolve, reject)=>{
+                const token = await this.generateToken();
+            });
         }catch(error){
             console.error({
                 message: error.message,
@@ -336,7 +361,9 @@ export default class Mpesa{
 
     async billManagerSingleInvoicing(){
         try{
-            return new Promise(async (resolve, reject)=>{});
+            return new Promise(async (resolve, reject)=>{
+                const token = await this.generateToken();
+            });
         }catch(error){
             console.error({
                 message: error.message,
@@ -347,7 +374,9 @@ export default class Mpesa{
 
     async billManagerBulkInvoicing(){
         try{
-            return new Promise(async (resolve, reject)=>{});
+            return new Promise(async (resolve, reject)=>{
+                const token = await this.generateToken();
+            });
         }catch(error){
             console.error({
                 message: error.message,
@@ -358,7 +387,9 @@ export default class Mpesa{
 
     async billManagerReconciliation(){
         try{
-            return new Promise(async (resolve, reject)=>{});
+            return new Promise(async (resolve, reject)=>{
+                const token = await this.generateToken();
+            });
         }catch(error){
             console.error({
                 message: error.message,
@@ -369,7 +400,9 @@ export default class Mpesa{
 
     async billManagerCancelSingleInvoicing(){
         try{
-            return new Promise(async (resolve, reject)=>{});
+            return new Promise(async (resolve, reject)=>{
+                const token = await this.generateToken();
+            });
         }catch(error){
             console.error({
                 message: error.message,
@@ -380,7 +413,9 @@ export default class Mpesa{
 
     async billManagerCancelBulkInvoicing(){
         try{
-            return new Promise(async (resolve, reject)=>{});
+            return new Promise(async (resolve, reject)=>{
+                const token = await this.generateToken();
+            });
         }catch(error){
             console.error({
                 message: error.message,
@@ -391,7 +426,9 @@ export default class Mpesa{
 
     async billManagerUpdateOnBoardingdetails(){
         try{
-            return new Promise(async (resolve, reject)=>{});
+            return new Promise(async (resolve, reject)=>{
+                const token = await this.generateToken();
+            });
         }catch(error){
             console.error({
                 message: error.message,
@@ -402,7 +439,9 @@ export default class Mpesa{
 
     async billManagerUpdateSingleInvoicing(){
         try{
-            return new Promise(async (resolve, reject)=>{});
+            return new Promise(async (resolve, reject)=>{
+                const token = await this.generateToken();
+            });
         }catch(error){
             console.error({
                 message: error.message,
@@ -413,7 +452,9 @@ export default class Mpesa{
 
     async billManagerUpdateBulkInvoicing(){
         try{
-            return new Promise(async (resolve, reject)=>{});
+            return new Promise(async (resolve, reject)=>{
+                const token = await this.generateToken();
+            });
         }catch(error){
             console.error({
                 message: error.message,
