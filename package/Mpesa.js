@@ -784,8 +784,31 @@ export default class Mpesa{
                     "Requester":`${requester_phone_number}`,
                     "Remarks":`${remarks}`,
                     "QueueTimeOutURL":`${queue_timeout_url}`,
-                    "ResultURL":"http://0.0.0.0:8888/TimeOutListener.php",
+                    "ResultURL": `${result_url}`,
                 }
+
+                const requestHeaders = new Headers(
+                requestHeaders.append("Content-Type","application/json");
+                requestHeaders.append("Authorization", `Bearer ${token}`);
+
+                const requestOptions = {
+                    method: "POST",
+                    headers: requestHeaders,
+                    body: JSON.stringify(darajaRequestBody)
+                }
+
+                const request = new Request(merchantEndpoint, requestOptions);
+                const response = await fetch(request);
+                
+                if(response.error){
+                    console.log("Business to Business Paybill Transaction Error");
+                    reject(response.error);
+                    return;
+                }
+
+                const data = await response.json()
+                resolve(data);
+                return;
             });
         }catch(error){
             console.error({
