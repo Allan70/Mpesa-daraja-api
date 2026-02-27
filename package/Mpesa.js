@@ -1,3 +1,5 @@
+import { Request } from "node-fetch";
+
 export default class Mpesa{
 
     constructor({ callbackURL, consumerSecret, consumerKey, passKey, mpesaBaseUrl}){
@@ -367,11 +369,52 @@ export default class Mpesa{
         * "Cancelled/Completed" must be in sentence case and well-spelled.
         *
     * */
-    async customerToBusinesss(){
+    async customerToBusiness({
+        ShortCode,
+        ConfirmationURL,
+        ValidationURL,
+        ResponseType="Completed",
+    }){
         try{
+            if(ResponseType != "Completed" || ResponseType != "Cancelled")
+            {
+                throw new Error("Response type can either be 'Completed' or 'Cancelled' ");
+            }
+
             return new Promise(async (resolve, reject)=>{
                 const token = await this.generateToken();
                 const merchantEndpoint = `${this.url}${this.urls.c2b_v2}`
+
+                const darajarequestBody = {
+                    "ShortCode": `${ShortCode}`,
+                    "ResponseType": ResponseType,
+                    "ConfirmationURL": ConfirmationURL,
+                    "ValidationURL": ValidationURL
+                }
+
+                const requestheaders = new Headers();
+                requestHeaders.append("Content-Type", "application/json");
+                requestHeaders.append("Authorization". `Bearer ${token}`);
+
+                const requestOptions = {
+                    method: "POST",
+                    headers: requestHeaders,
+                    body: JSON.stringify(darajarequestBody);
+                }
+
+                const request = new Request(merchantEndpoint, requestOptions);
+                const response = await fetch(request);
+                if(response.error){
+                    console.error("Customer to Business Register URL failure:", response.error);
+                    reject(response.error);
+                    return;
+                }
+                
+                const data = await response.json();
+                console.log("Successfully Registered URL");
+                resolve(data);
+                return;
+
             });        
         }catch(error){
             console.error({
@@ -381,7 +424,8 @@ export default class Mpesa{
         }
     }
 
-    async customerToBusinessPaybill(){
+    async customerToBusinessPaybillv1({
+    }){
         try{
             return new Promise(async (resolve, reject)=>{
                 const token = await this.generateToken();
