@@ -23,8 +23,6 @@ export default class Mpesa{
             account_balance: "/mpesa/accountbalance/v1/query",
             // B2C
             b2c: "/mpesa/b2c/v1/paymentrequest",
-            b2c_transaction_status: "/mpesa/transactionstatus/v1/query",
-            b2c_account_balance: "/mpesa/accountbalance/v1/query",
             // M-PESA Express (Lipa na M-Pesa Production)
             express_stk_push: "/mpesa/stkpush/v1/processrequest",
             express_stk_push_query: "/mpesa/stkpushquery/v1/query",
@@ -424,12 +422,51 @@ export default class Mpesa{
         }
     }
 
-    async customerToBusinessPaybillv1({
+    async customerToBusinessv1({
+        ShortCode,
+        ResponseType = "Completed",
+        ConfirmationURL,
+        ValidationURL
     }){
         try{
+            if(ResponseType != "Completed" || ResponseType != "Cancelled"){
+                throw new Error("response type can either be 'Completed' or 'Cancelled'");
+            }
+
             return new Promise(async (resolve, reject)=>{
                 const token = await this.generateToken();
-                const merchantEndpoint = `${this.url}${this.urls.c2b_paybill_v1}`
+                const merchantEndpoint = `${this.url}${this.urls.c2b_paybill_v1}`;
+
+                const darajaRequestBody = {    
+                    "ShortCode": `${ShortCode}`,
+                    "ResponseType": ResponseType,
+                    "ConfirmationURL": ConfirmationURL,
+                    "ValidationURL": ValidationURL
+                }
+
+                const requestHeaders = new Headers();
+                requestHeaders.append("Content-Type", "application/json");
+                requestHeaders.append("Authorization", `Bearer ${token}`);
+
+                const requestOptions = {
+                    method: "POST",
+                    headers: requestHeaders,
+                    body: JSON.strigify(darajaRequestBody)
+                }
+
+                const request = Request(merchantEndpoint, requestOptions);
+                const response = await fetch(request);
+                if(response.error){
+                    console.error("Customer to Business v1 Registrer URL failure")
+                    reject(response.error)
+                    return;
+                }
+
+                const data = await response.json();
+                console.log("Successfully Registered v1 URL");
+                resolve(data);
+                return;
+
             });
         }catch(error){
             console.error({
@@ -439,11 +476,77 @@ export default class Mpesa{
         }
     }
 
-    async transactionStatus(){
+    /**
+        *
+        * The Transaction status API can be used as a secondary reconciliation 
+        * mechanism when Callbacks are not received. To check the status of a 
+        * transaction, you are required to have either an M-Pesa Receipt number 
+        * or an Originator Conversation ID of the transaction
+        *
+        * @param {Object} param0 
+        * @param {string} param0.api_username 
+        * @param {string} param0.transaction_id 
+        * @param {string} param0.short_code 
+        * @param {string} param0.MSISDN 
+        * @param {string} param0.remarks 
+        * @param {string} [param0.occasion="OK"] 
+        * @param {string} param0.result_url 
+        * @param {string} param0.queue_timeout_url 
+        * @param {string} param0.OriginalConversationID 
+        *
+    * */
+    async transactionStatus({
+        api_username,
+        transaction_id,
+        short_code, //Required
+        MSISDN, // Optional value
+        remarks,
+        occasion = "OK",
+        result_url,
+        queue_timeout_url,
+        OriginalConversationID
+    }){
         try{
             return new Promise(async (resolve, reject)=>{
                 const token = await this.generateToken();
                 const merchantEndpoint = `${this.url}${this.urls.transaction_status}`
+                const passwordSaf = this.encrypted_passkey(short_code);
+                const darajaRequestBody = {
+                    "Initiator": `${api_username}`,
+                    "SecurityCredential":`${passwordSaf}` ,
+                    "CommandID": "TransactionStatusQuery",
+                    "TransactionID": `${transaction_id}`,
+                    "OriginalConversationID": `${OriginalConversationID}`,
+                    "PartyA": `${short_code || MSISDN}`,
+                    "IdentifierType": "4",
+                    "ResultURL": `${result_url}`,
+                    "QueueTimeOutURL": `${queue_timeout_url}`,
+                    "Remarks": `${remarks}`,
+                    "Occasion": `${occasion}`
+                }
+
+                const requestHeaders = new Headers();
+                requestHeaders.append("Content-Type", "application/json"); 
+                requestHeaders.append("Authorization", `Bearer ${token}`);
+
+                const requestOptions = {
+                    method: "POST",
+                    headers: requestHeaders,
+                    body: JSON.stringify(darajaRequestBody)
+                }
+
+                const request = new Request(merchantEndpoint, requestOptions);
+                const response = await fetch(request);
+                if(response.error){
+                    console.error("Transaction Status failure");
+                    reject(response.error);
+                    return;
+                }
+
+                const data = await response.json()
+                console.log("Successfully fetched Transaction Status");
+                resolve(data);
+                return;
             });
         }catch(error){
             console.error({
@@ -451,13 +554,78 @@ export default class Mpesa{
                 code: error.code
             })
         }
+
     }
 
-    async accountBalance(){
+    /**
+        *
+        * The M-PESA Account Balance API by Safaricom enables organizations to 
+        * programmatically check their M-PESA account balances. This is essential 
+        * for automating financial processes, monitoring account status, and 
+        * ensuring sufficient funds for operations.
+        *
+        * Key Features:
+        *   - Real-time Balance Inquiry: Instantly retrieve your M-PESA account balance.
+        *   - Secure Access: Authentication and authorization ensure only permitted 
+        *   entities access the balance.
+        *   - Automated Responses: Receive automatic acknowledgments and 
+        *   responses to inquiries.
+        *
+        * @param {Object} param0 
+        * @param {string} param0.api_username 
+        * @param {string} param0.short_code 
+        * @param {string} param0.queueTimeoutURL 
+        * @param {string} param0.resultURL 
+        * @param {string} param0.remarks
+        *
+        *
+    * */
+    async accountBalance({
+        api_username,
+        short_code,
+        queueTimeoutURL,
+        resultURL,
+        remarks = "ok"
+    }){
         try{
             return new Promise(async (resolve, reject)=>{
                 const token = await this.generateToken();
                 const merchantEndpoint = `${this.url}${this.urls.account_balance}`
+                const passwordSaf = this.encrypted_passkey(short_code);
+
+                const darajaRequestBody = {
+                    "Initiator": `${api_username}`,
+                    "SecurityCredential": `${passwordSaf}`,
+                    "CommandID": "AccountBalance",
+                    "PartyA": `${short_code}`,
+                    "IdentifierType": "4",
+                    "Remarks": `${remarks}`,
+                    "QueueTimeOutURL":`${queueTimeoutURL}`,
+                    "ResultURL": `${resultURL}`
+                }
+
+                const requestHeaders = new Headers();
+                requestHeaders.append("Content-Type", "application/json")
+                requestHeaders.append("Authorization", `Bearer ${token}`)
+
+                const requestOptions = {
+                    method: "POST",
+                    headers: requestHeaders,
+                    body: JSON.stringify(darajaRequestBody)
+                }
+
+                const request = new Request(merchantEndpoint, requestOptions);
+                const response = await fetch(request);
+                if(response.error){
+                    console.error("Account Balance request failure:", response.error);
+                    reject(response.error);
+                    return;
+                }
+
+                const data = await response.json();
+                console.log("Successfully Requested Account Balance")
+                resolve(data);
+                return;
             });
         }catch(error){
             console.error({
@@ -467,11 +635,77 @@ export default class Mpesa{
         }
     }
 
-    async businessToCustomer(){
+    /**
+        *
+        * B2C API is used to make payments from a Business to Customers'
+        * number also known as Bulk Disbursements.
+        *
+        * @param {Object} param0 
+        * @param {string} param0.OriginatorConversationID 
+        * @param {string} param0.api_username 
+        * @param {string} param0.amount 
+        * @param {string} param0.short_code 
+        * @param {string} [param0.remarks="ok"] 
+        * @param {string} param0.customer_phone_number 
+        * @param {string} param0.queue_timeout_url 
+        * @param {string} param0.result_url 
+        * @param {string} [param0.occassion="payout"] 
+        *
+    * */
+    async businessToCustomer({
+        OriginatorConversationID,
+        api_username,
+        amount,
+        short_code,
+        remarks = "ok",
+        customer_phone_number,//2547XXXXXXXX
+        queue_timeout_url, 
+        result_url,
+        occassion = "payout"
+    }){
         try{
             return new Promise(async (resolve, reject)=>{
                 const token = await this.generateToken();
                 const merchantEndpoint = `${this.url}${this.urls.b2c}`
+                const passwordSaf = this.encrypted_passkey(short_code);
+
+                const darajaRequestBody = { 
+                    "OriginatorConversationID": `${OriginatorConversationID}`, 
+                    "InitiatorName": `${api_username}`, 
+                    "SecurityCredential": `${passwordSaf}`, 
+                    "CommandID": "BusinessPayment", 
+                    "Amount": `${amount}`, 
+                    "PartyA": `${short_code}`, 
+                    "PartyB": `${customer_phone_number}`, 
+                    "Remarks": `${remarks}`, 
+                    "QueueTimeOutURL": `${queue_timeout_url}`, 
+                    "ResultURL": `${result_url}`, 
+                    "Occassion": `${occassion}` 
+                }
+
+                const requestHeaders = new Headers();
+                requestHeaders.append("Content-Type", "application/json");
+                requestHeaders.append("Authorization", `Bearer ${token}`);
+
+                const requestOptions = {
+                    method: "POST",
+                    headers: requestHeaders,
+                    body: JSON.stringify(darajaRequestBody)
+                }
+
+                const request = new Request(merchantEndpoint, requestOptions);
+                const response = await fetch(request);
+                if(response.error){
+                    console.error("Business to Customer transaction failure:", response.error);
+                    reject(response.error);
+                    return;
+                }
+
+                const data = await response.json();
+                console.log("Successful Business to Customer transaction");
+                resolve(data)
+                return; 
+                
             });
         }catch(error){
             console.error({
@@ -481,39 +715,37 @@ export default class Mpesa{
         }
     }
 
-    async businessToCustomerTransactionStatus(){
-        try{
-            return new Promise(async (resolve, reject)=>{
-                const token = await this.generateToken();
-                const merchantEndpoint = `${this.url}${this.urls.b2c_transaction_status}`
-            });
-        }catch(error){
-            console.error({
-                message: error.message,
-                code: error.code
-            })
-        }
-    }
-
-    async businessToCustomerAccountBalance(){
-        try{
-            return new Promise(async (resolve, reject)=>{
-                const token = await this.generateToken();
-                const merchantEndpoint = `${this.url}${this.urls.b2c_account_balance}`
-            });
-        }catch(error){
-            console.error({
-                message: error.message,
-                code: error.code
-            })
-        }
-    }
-
-    async businessToBusinessBuyGoods(){
+    async businessToBusinessBuyGoods({
+        api_username,
+        api_short_code,
+        business_short_code,
+        amount,
+        account_reference,
+        requester_phone_number,
+        remarks = "OK",
+        timeoutURL,
+        resultURL
+    }){
         try{
             return new Promise(async (resolve, reject)=>{
                 const token = await this.generateToken();
                 const merchantEndpoint = `${this.url}${this.urls.b2b_buygoods}`
+                const passwordSaf = this.encrypted_passkey(api_short_code);
+                const darajaRequestBody = {    
+                    "Initiator":`${api_username}`,
+                    "SecurityCredential": `${passwordSaf}`,
+                    "Command ID": "BusinessBuyGoods",
+                    "SenderIdentifierType": "4",
+                    "RecieverIdentifierType":"4",
+                    "Amount":`${amount}`,
+                    "PartyA":`${api_short_code}`,
+                    "PartyB":`${business_short_code}`,
+                    "AccountReference":`${account_reference}`,
+                    "Requester":`${requester_phone_number}`,
+                    "Remarks": remarks,
+                    "QueueTimeOutURL":`${timeoutURL}`,
+                    "ResultURL":`${resultURL}`,
+                }
             });
         }catch(error){
             console.error({
@@ -523,11 +755,37 @@ export default class Mpesa{
         }
     }
 
-    async businessToBusinessPaybill(){
+    async businessToBusinessPaybill({
+        api_username,
+        api_short_code,
+        amount,
+        recipient_short_code, 
+        account_reference,
+        requester_phone_number,
+        remarks = "OK",
+        queue_timeout_url, 
+        result_url
+    }){
         try{
             return new Promise(async (resolve, reject)=>{
                 const token = await this.generateToken();
                 const merchantEndpoint = `${this.url}${this.urls.b2b_paybill}`
+                const passwordSaf = this.encrypted_passkey(api_short_code)
+                const darajaRequestBody = {    
+                    "Initiator":`${api_username}`,
+                    "SecurityCredential": `${passwordSaf}`,
+                    "Command ID": "BusinessPayBill",
+                    "SenderIdentifierType": "4",
+                    "RecieverIdentifierType":"4",
+                    "Amount":`${amount}`,
+                    "PartyA": `${api_short_code}`,
+                    "PartyB": `${recipient_short_code}`,
+                    "AccountReference":`${account_reference}`,
+                    "Requester":`${requester_phone_number}`,
+                    "Remarks":`${remarks}`,
+                    "QueueTimeOutURL":`${queue_timeout_url}`,
+                    "ResultURL":"http://0.0.0.0:8888/TimeOutListener.php",
+                }
             });
         }catch(error){
             console.error({
@@ -542,6 +800,22 @@ export default class Mpesa{
             return new Promise(async (resolve, reject)=>{
                 const token = await this.generateToken();
                 const merchantEndpoint = `${this.url}${this.urls.b2c_account_topup}`
+
+                const darajaRequestBody = {    
+                    "Initiator":"testapi",
+                    "SecurityCredential":"IAJVUHDGj0yDU3aop/WI9oSPhkW3DVlh7EAt3iRyymTZhljpzCNnI/xFKZNooOf8PUFgjmEOihUnB24adZDOv3Ri0Citk60LgMQnib0gjsoc9WnkHmGYqGtNivWE20jyIDUtEKLlPr3snV4d/H54uwSRVcsATEQPNl5n3+EGgJFIKQzZbhxDaftMnxQNGoIHF9+77tfIFzvhYQen352F4D0SmiqQ91TbVc2Jdfx/wd4HEdTBU7S6ALWfuCCqWICHMqCnpCi+Y/ow2JRjGYHdfgmcY8pP5oyH25uQk1RpWV744aj2UROjDrxTnE7a6tDN6G/dA21MXKaIsWJT/JyyXg==",
+                    "CommandID":"BusinessPayToBulk",
+                    "SenderIdentifierType":"4",
+                    "RecieverIdentifierType":"4",
+                    "Amount":"239",
+                    "PartyA":"600979",
+                    "PartyB":"600000",
+                    "AccountReference":"353353",
+                    "Requester":"254708374149",
+                    "Remarks":"OK",
+                    "QueueTimeOutURL":"https://mydomain/path/timeout",
+                    "ResultURL":"https://mydomain/path/result"
+                }
             });
         }catch(error){
             console.error({
