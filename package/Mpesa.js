@@ -392,14 +392,14 @@ export default class Mpesa{
                     "ValidationURL": ValidationURL
                 }
 
-                const requestheaders = new Headers();
+                const requestHeaders = new Headers();
                 requestHeaders.append("Content-Type", "application/json");
-                requestHeaders.append("Authorization". `Bearer ${token}`);
+                requestHeaders.append("Authorization", `Bearer ${token}`);
 
                 const requestOptions = {
                     method: "POST",
                     headers: requestHeaders,
-                    body: JSON.stringify(darajarequestBody);
+                    body: JSON.stringify(darajarequestBody)
                 }
 
                 const request = new Request(merchantEndpoint, requestOptions);
