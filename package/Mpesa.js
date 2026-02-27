@@ -110,10 +110,24 @@ export default class Mpesa{
 
     /**
         *
-        * LIPA NA M-PESA ONLINE API also known as M-PESA express is a Merchant/Business initiated C2B (Customer to Business) transaction.
+        * LIPA NA M-PESA ONLINE API also known as M-PESA express is a 
+        * Merchant/Business initiated C2B (Customer to Business) transaction.
+        *
+        * @param {Object} param0 
+        * @param {string} param0.phone 
+        * @param {string} param0.amount 
+        * @param {string} param0.tillOrPayBillNumber 
+        * @param {string} param0.account_reference 
+        * @param {string} param0.transaction_desc 
         *
     **/
-    async express({phone, amount, tillOrPayBillNumber, account_reference, transaction_desc}){
+    async express({
+        phone, 
+        amount, 
+        tillOrPayBillNumber, 
+        account_reference, 
+        transaction_desc
+    }){
         try{
 
             if(typeof account_reference != 'string' && account_reference.length > 13){
@@ -164,15 +178,13 @@ export default class Mpesa{
                 const response = await fetch(request)
                 if(response.error)
                 {
-                    console.log("Buygoods error:", response.error)
+                    console.error("Buygoods error:", response.error)
                     reject(response.error)
                     return;
                 }
 
                 const data = await response.json() 
-                
                 console.log("BuyGoods success:", data)
-                
                 resolve(data)
                 return;
             })
@@ -184,6 +196,10 @@ export default class Mpesa{
     /**
         *
         * Use this method to check the status of a Lipa Na M-Pesa Online Payment.
+        *
+        * @param {Object} param0 
+        * @param {string} param0.tillOrPayBillNumber 
+        * @param {string} param0.CheckoutRequestID 
         *
     **/
     async expressPushQuery({ tillOrPayBillNumber, CheckoutRequestID }){
@@ -241,12 +257,21 @@ export default class Mpesa{
 
     /**
         * 
-        * reversals method enables the reversal of Customer-to-Business (C2B) transactions.
+        * Reversals API enables the reversal of Customer-to-Business (C2B) transactions.
+        *
+        * @param {Object} param0 
+        * @param {string} param0.mpesa_business_username 
+        * @param {string} param0.api_shortcode 
+        * @param {string} param0.amount 
+        * @param {string} param0.remarks 
+        * @param {string} param0.timeoutURL 
+        * @param {string} param0.resultURL 
+        * @param {string} param0.transactionID 
         *
     **/
     async reversal({
-        mpesa_business_username,
-        shortCode,
+        api_username,
+        api_shortcode,
         amount,
         remarks,
         timeoutURL, 
@@ -255,7 +280,7 @@ export default class Mpesa{
 
     }){
         try{
-            if(!mpesa_business_username || typeof mpesa_business_username != 'string' || !`^[a-zA-Z0-9]{5,20}$`.test(mpesa_business_username))
+            if(!api_username || typeof api_username != 'string' || !`^[a-zA-Z0-9]{5,20}$`.test(api_username))
                 throw new Error('Invalid mpesa business username');
 
             if(typeof remarks != 'string')
@@ -282,7 +307,7 @@ export default class Mpesa{
             return new Promise(async (resolve, reject)=>{
                 const token = await this.generateToken();
                 const merchantEndpoint = `${this.url}${this.urls.reversal}`;
-                const businessNumber = parseInt(`${shortCode}`);
+                const businessNumber = parseInt(`${api_shortcode}`);
                 const amount_value = parseInt(amount);
                 const passwordSaf = this.encrypted_passkey(businessNumber);
 
@@ -290,7 +315,7 @@ export default class Mpesa{
                     throw new Error("Invalid amount");
 
                 const darajaRequestBody = {
-                    "Initiator": `${mpesa_business_username}`,
+                    "Initiator": `${api_username}`,
                     "SecurityCredential": passwordSaf,
                     "CommandID": "TransactionReversal",
                     "TransactionID": transactionID,
@@ -366,6 +391,11 @@ export default class Mpesa{
         * Note: As you set up the default value, the words 
         * "Cancelled/Completed" must be in sentence case and well-spelled.
         *
+        * @param {Object} param0 
+        * @param {string} param0.ShortCode 
+        * @param {string} param0.ConfirmationURL 
+        * @param {string} param0.ValidationURL 
+        * @param {string} [param0.ResponseType="Completed"] 
     * */
     async customerToBusiness({
         ShortCode,
@@ -422,6 +452,18 @@ export default class Mpesa{
         }
     }
 
+
+    /**
+        *
+        * Register validation and confirmation URLs on M-Pesa
+        *
+        * @param {Object} param0 
+        * @param {string} param0.ShortCode 
+        * @param {string} [param0.ResponseType="Completed"] "Completed" | "Cancelled" 
+        * @param {string} param0.ConfirmationURL 
+        * @param {string} param0.ValidationURL 
+        *
+    * */
     async customerToBusinessv1({
         ShortCode,
         ResponseType = "Completed",
@@ -715,6 +757,24 @@ export default class Mpesa{
         }
     }
 
+    /**
+        *
+        * This API enables you to pay for goods and services directly from your 
+        * business account to a till number, merchant store number 
+        * or Merchant HO.
+        *
+        * @param {Object} param0 
+        * @param {string} param0.api_username 
+        * @param {string} param0.api_short_code 
+        * @param {string} param0.business_short_code 
+        * @param {string} param0.amount 
+        * @param {string} param0.account_reference (Account number)
+        * @param {string} param0.requester_phone_number 
+        * @param {string} [param0.remarks="OK"] 
+        * @param {string} param0.timeoutURL 
+        * @param {string} param0.resultURL 
+        *
+    * */
     async businessToBusinessBuyGoods({
         api_username,
         api_short_code,
@@ -746,6 +806,29 @@ export default class Mpesa{
                     "QueueTimeOutURL":`${timeoutURL}`,
                     "ResultURL":`${resultURL}`,
                 }
+
+                const requestHeaders = new Headers()
+                requestHeaders.append("Content-Type", "application/json");
+                requestHeaders.append("Authorization", `bearer ${token}`);
+
+                const requestOptions = {
+                    method: "POST", 
+                    headers: requestHeaders,
+                    body: JSON.stringify(darajaRequestBody)
+                }
+
+                const request = new Request(merchantEndpoint, requestOptions);
+                const response = await fetch(request);
+                if(response.error){
+                    console.log("Business to Business Buygoods error:", request.error);
+                    reject(response.error)
+                    return;
+                }
+
+                const data = await response.json()
+                console.log("Business to Business BuyGoods.")
+                resolve(data);
+                return;
             });
         }catch(error){
             console.error({
@@ -755,6 +838,23 @@ export default class Mpesa{
         }
     }
 
+    /**
+        *
+        * This API enables you to pay bills directly from your business 
+        * account to a pay bill number, or a paybill store.
+        *
+        * @param {Object} param0 
+        * @param {string} param0.api_username 
+        * @param {string} param0.api_short_code 
+        * @param {string} param0.amount 
+        * @param {string} param0.recipient_short_code 
+        * @param {string} param0.account_reference 
+        * @param {string} param0.requester_phone_number 
+        * @param {string} [param0.remarks="OK"] 
+        * @param {string} param0.queue_timeout_url 
+        * @param {string} param0.result_url 
+        *
+    * */
     async businessToBusinessPaybill({
         api_username,
         api_short_code,
@@ -787,7 +887,7 @@ export default class Mpesa{
                     "ResultURL": `${result_url}`,
                 }
 
-                const requestHeaders = new Headers(
+                const requestHeaders = new Headers();
                 requestHeaders.append("Content-Type","application/json");
                 requestHeaders.append("Authorization", `Bearer ${token}`);
 
@@ -818,27 +918,77 @@ export default class Mpesa{
         }
     }
 
-    async businessToCustomerAccountTopup(){
+    /*
+        *
+        * This API enables you to pay bills directly from your business 
+        * account to a pay bill number, or a paybill store.
+        *
+        * @param {Object} param0
+        * @param {string} param0.api_username
+        * @param {string} param0.api_short_code
+        * @param {string} param0.amount
+        * @param {string} param0.customer_short_code
+        * @param {string} param0.account_number
+        * @param {string} [param0.remarks = "OK"]
+        * @param {string} param0.queue_timeout_url
+        * @param {string} param0.result_url
+        *
+    * */ 
+    async businessToCustomerAccountTopup({
+        api_username,        
+        api_short_code,
+        amount,
+        customer_short_code,
+        customer_mobile_number,
+        account_number,
+        remarks = "OK",
+        queue_timeout_url, 
+        result_url
+    }){
         try{
             return new Promise(async (resolve, reject)=>{
                 const token = await this.generateToken();
                 const merchantEndpoint = `${this.url}${this.urls.b2c_account_topup}`
+                const passwordSaf  = this.encrypted_passkey(api_short_code);
 
                 const darajaRequestBody = {    
-                    "Initiator":"testapi",
-                    "SecurityCredential":"IAJVUHDGj0yDU3aop/WI9oSPhkW3DVlh7EAt3iRyymTZhljpzCNnI/xFKZNooOf8PUFgjmEOihUnB24adZDOv3Ri0Citk60LgMQnib0gjsoc9WnkHmGYqGtNivWE20jyIDUtEKLlPr3snV4d/H54uwSRVcsATEQPNl5n3+EGgJFIKQzZbhxDaftMnxQNGoIHF9+77tfIFzvhYQen352F4D0SmiqQ91TbVc2Jdfx/wd4HEdTBU7S6ALWfuCCqWICHMqCnpCi+Y/ow2JRjGYHdfgmcY8pP5oyH25uQk1RpWV744aj2UROjDrxTnE7a6tDN6G/dA21MXKaIsWJT/JyyXg==",
-                    "CommandID":"BusinessPayToBulk",
+                    "Initiator": `${api_username}`,
+                    "SecurityCredential": `${passwordSaf}`,
                     "SenderIdentifierType":"4",
                     "RecieverIdentifierType":"4",
-                    "Amount":"239",
-                    "PartyA":"600979",
-                    "PartyB":"600000",
-                    "AccountReference":"353353",
-                    "Requester":"254708374149",
-                    "Remarks":"OK",
-                    "QueueTimeOutURL":"https://mydomain/path/timeout",
-                    "ResultURL":"https://mydomain/path/result"
+                    "Amount":`${amount}`,
+                    "PartyA":`${api_short_code}`,
+                    "PartyB":`${customer_short_code}`,
+                    "AccountReference":`${account_number}`,
+                    "Requester":`${customer_mobile_number}`,
+                    "Remarks":`${remarks}`,
+                    "QueueTimeOutURL":`${queue_timeout_url}`,
+                    "ResultURL": `${result_url}`
                 }
+
+                const requestHeaders = new Headers()
+                requestHeaders.append("Content-Type", "application/json");
+                requestHeaders.append("Authorization", `Bearer ${token}`);
+
+                const requestOptions = {
+                    method: "POST",
+                    headers: requestHeaders, 
+                    body: JSON.stringify(darajaRequestBody)
+                }
+
+                const request = new Request(merchantEndpoint, requestOptions);
+                const response = await fetch(request);
+                if(response.error){
+                    console.error("Business to Customer Account TopUp Error: ", response.error);
+                    reject(response.error);
+                    return; 
+                }
+
+                const data= await response.json()
+                console.log("Business to Customer Account Topup Successful"); 
+                resolve(data)
+                return;
+
             });
         }catch(error){
             console.error({
