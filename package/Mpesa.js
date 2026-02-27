@@ -526,7 +526,7 @@ export default class Mpesa{
         * or an Originator Conversation ID of the transaction
         *
         * @param {Object} param0 
-        * @param {string} param0.api_username 
+* @param {string} param0.api_username 
         * @param {string} param0.transaction_id 
         * @param {string} param0.short_code 
         * @param {string} param0.MSISDN 
@@ -998,11 +998,87 @@ export default class Mpesa{
         }
     }
 
-    async dynamicQRCode(){
+    /**
+        *
+        * Use this API to generate a Dynamic QR which enables Safaricom M-PESA 
+        * customers who have My Safaricom App or M-PESA app, to scan a QR 
+        * (Quick Response) code, to capture till number and amount then 
+        * authorize to pay for goods and services at select LIPA NA M-PESA 
+        * (LNM) merchant outlets.
+        *
+        * 	Transaction Type. The supported types are:
+        * 	BG: Pay Merchant (Buy Goods).
+        * 	WA: Withdraw Cash at Agent Till.
+        * 	PB: Paybill or Business number.
+        * 	SM: Send Money(Mobile number)
+        * 	SB: Sent to Business. Business number CPI in MSISDN format.
+        *
+        * 	Credit Party Identifier.Can be a Mobile Number, Business Number, 
+        * 	Agent Till, Paybill or Business number, or Merchant Buy Goods.
+        *
+        * qr_code_size: Size of the QR code image in pixels. QR code image 
+        * will always be a square image.
+        *
+        *
+        * @param {Object} param0 
+        * @param {*} param0.your_business_name 
+        * @param {*} param0.reference_value 
+        * @param {*} param0.amount 
+        * @param {*} param0.transaction_type
+        * @param {*} param0.credit_party_identifier 
+        * @param {number} [param0.qr_code_size=300] 
+        *
+    * */
+
+    async dynamicQRCode({
+        your_business_name,
+        reference_value,
+        amount,
+        transaction_type,
+        credit_party_identifier,
+        qr_code_size = 300
+    }){
         try{
             return new Promise(async (resolve, reject)=>{
                 const token = await this.generateToken();
                 const merchantEndpoint = `${this.url}${this.urls.dynamicQR_code}`
+
+                if(transaction_type != "BG" || transaction_type !=  "WA" || transaction_type != "PB" || transaction_type != "SM" || transaction_type != SB){
+                    reject("Invalid Transaction Type")
+                    return;
+                }
+
+                const darajaRequestBody = {    
+                    "MerchantName": `${your_business_name}`,
+                    "RefNo": `${reference_value}`,
+                    "Amount": parseFloat(`${amount}`),
+                    "TrxCode": `${transaction_type}`,
+                    "CPI": `${credit_party_identifier}`,
+                    "Size": qr_code_size
+                }
+
+                const requestHeaders = new Headers();
+                requestHeaders.append("Content-Type","application/json")
+                requestHeaders.append("Authorization", `Bearer ${token}`)
+
+                const requestOptions = {
+                    method : "POST",
+                    headers: requestHeaders, 
+                    body: JSON.stringify(darajaRequestBody)
+                }
+
+                const request = new Request(merchantEndpoint, requestOptions)
+                const response = await fetch(request)
+                if(response.error){
+                    console.error("Dynamic QR code Error:", response.error)
+                    reject(response.error)
+                    return;
+                }
+
+                const data = await response.json();
+                console.log("Successfully created Dynamic QR code")
+                resolve(data)
+                return;
             });
         }catch(error){
             console.error({
