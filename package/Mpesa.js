@@ -526,7 +526,7 @@ export default class Mpesa{
         * or an Originator Conversation ID of the transaction
         *
         * @param {Object} param0 
-* @param {string} param0.api_username 
+        * @param {string} param0.api_username 
         * @param {string} param0.transaction_id 
         * @param {string} param0.short_code 
         * @param {string} param0.MSISDN 
@@ -1021,11 +1021,11 @@ export default class Mpesa{
         *
         *
         * @param {Object} param0 
-        * @param {*} param0.your_business_name 
-        * @param {*} param0.reference_value 
-        * @param {*} param0.amount 
-        * @param {*} param0.transaction_type
-        * @param {*} param0.credit_party_identifier 
+        * @param {string} param0.your_business_name 
+        * @param {string} param0.reference_value 
+        * @param {string} param0.amount 
+        * @param {string} param0.transaction_type
+        * @param {string} param0.credit_party_identifier 
         * @param {number} [param0.qr_code_size=300] 
         *
     * */
@@ -1087,55 +1087,71 @@ export default class Mpesa{
         }
     }
 
-    async billManagerInvoiceOptin(){
+    /**
+        *
+        * M-PESA Bill manager for organizations. M-PESA Bill Manager is a 
+        * digital service that gives the business and customers a one-stop 
+        * end-to-end platform to send, receive, pay and reconcile all payments.
+        *
+        * This is the first API used to opt you as a biller to our bill 
+        * manager features. Once you integrate to this API and send a request 
+        * with a success response, your shortcode is whitelisted and you 
+        * are able to integrate with all the other remaining bill manager APIs.
+        *
+        * @param {Object} param0 
+        * @param {string} param0.shortcode - required
+        * @param {string} param0.email - required
+        * @param {number} param0.phone - required 07XXXXXXXX
+        * @param {boolean} param0.send_reminders - 0 (False) or 1 (True) required
+        * @param {string} param0.logo - JPEG, JPG optional
+        * @param {string} param0.callbackURL - required
+        *
+    * */
+    async billManagerInvoiceOptin({
+        shortcode,
+        email,
+        phone,
+        send_reminders,
+        logo,
+        callbackURL
+    }){
         try{
             return new Promise(async (resolve, reject)=>{
                 const token = await this.generateToken();
                 const merchantEndpoint = `${this.url}${this.urls.bill_manager_invoice_optin}`
 
+
                 const darajaRequestBody = {  
-                    "shortcode":"718003",
-                    "email":"youremail@gmail.com",
-                    "officialContact":"0710XXXXXX",
-                    "sendReminders":"1",
-                    "logo":"image",
-                    "callbackurl":"http://my.server.com/bar/callback"
+                    "shortcode": `${shortcode}`,
+                    "email":`${email}`,
+                    "officialContact":`${phone}`,
+                    "sendReminders":`${send_reminders ? 1 : 0}`,
+                    "logo":`${logo}`,
+                    "callbackurl":`${callbackURL}`
                 }
-            });
-        }catch(error){
-            console.error({
-                message: error.message,
-                code: error.code
-            })
-        }
-    }
 
-    async billManagerSingleInvoicing(){
-        try{
-            return new Promise(async (resolve, reject)=>{
-                const token = await this.generateToken();
-                const merchantEndpoint = `${this.url}${this.urls.bill_manager_single_invoicing}`
+                const requestHeaders = new Headers();
+                requestHeaders.append("Content-Type","application/json")
+                requestHeaders.append("Authorization", `Bearer ${token}`)
 
-                const darajaRequestBody =  {
-                    "externalReference": "#9932340",
-                    "billedFullName":  "John Doe",
-                    "billedPhoneNumber":  "07XXXXXXXX",
-                    "billedPeriod":"August 2021",
-                    "invoiceName":"Jentrys",
-                    "dueDate":"2021-10-12",
-                    "accountReference":"1ASD678H",
-                    "amount":"800",
-                    "invoiceItems":[
-                        {
-                            "itemName":"food",
-                            "amount":"700"
-                        },
-                        {
-                            "itemName":"water",
-                            "amount":"100"
-                        }
-                    ]
-                } 
+                const requestOptions = {
+                    method : "POST",
+                    headers: requestHeaders,
+                    body: JSON.stringify(darajaRequestBody)
+                }
+
+                const request = new Request(merchantEndpoint, requestOptions)
+                const response = await fetch(request)
+                if(response.error){
+                    console.error("Bill Manager Invoice Optin Error:", response.error)
+                    reject(response.error)
+                    return;
+                }
+
+                const data = await response.json();
+                console.log("Successfully opted in Bill Manager Invoice")
+                resolve(data)
+                return;
             });
         }catch(error){
             console.error({
@@ -1147,23 +1163,130 @@ export default class Mpesa{
 
     /**
         *
+        * Bill Manager invoicing service enables you to create and 
+        * send e-invoices to your customers. Single invoicing functionality 
+        * will allow you to send out customized individual e-invoices. 
+        * Your customers will receive this notification(s) via an SMS to 
+        * the Safaricom phone number specified while creating the invoice.
         *
-        * @param { 
-        *  {
-        *    "externalReference": string,
-        *    "billedFullName": string,
-        *    "billedPhoneNumber": string,
-        *    "billedPeriod": string,
-        *    "invoiceName": string,
-        *    "dueDate": string,
-        *    "accountReference": string,
-        *    "amount": string,
-        *    "invoiceItems": {
-        *            "itemName": string,
-        *            "amount": string
-        *        }[]
-        * }[]
-        * } invoices
+        * A customer can still opt to pay via USSD, Sim tool kit, M-PESA App, 
+        * Safaricom App to your pay bill number as long as they reference 
+        * the correct account number (account reference) as specified on 
+        * the invoice.
+        *
+        * @typedef {Object} invoice_item
+        * @property {string} itemName
+        * @property {string} amount
+        *
+        * @param {Object} param0 
+        * @param {string} param0.external_reference 
+        * @param {string} param0.customer_full_name 
+        * @param {string} param0.customer_phone_number 
+        * @param {string} param0.billed_period 
+        * @param {string} param0.invoice_title 
+        * @param {string} param0.due_date 
+        * @param {string} param0.account_reference 
+        * @param {string} param0.amount 
+        * @param {invoice_item[]} param0.invoice_items 
+        *
+    * */
+    async billManagerSingleInvoicing({
+        external_reference,
+        customer_full_name,
+        customer_phone_number,
+        billed_period,
+        invoice_title,
+        due_date,
+        account_reference,
+        amount,
+        invoice_items
+    }){
+        try{
+            return new Promise(async (resolve, reject)=>{
+                const token = await this.generateToken();
+                const merchantEndpoint = `${this.url}${this.urls.bill_manager_single_invoicing}`
+
+                const darajaRequestBody =  {
+                    "externalReference": `${external_reference}`,
+                    "billedFullName":  `${customer_full_name}`,
+                    "billedPhoneNumber":  `${customer_phone_number}`,
+                    "billedPeriod":`${billed_period}`,
+                    "invoiceName": `${invoice_title}`,
+                    "dueDate":`${due_date}`,
+                    "accountReference":`${account_reference}`,
+                    "amount":`${amount}`,
+                    "invoiceItems": [...invoice_items] || []
+                } 
+
+                const requestHeaders = new Headers();
+                requestHeaders.append("Content-Type","application/json")
+                requestHeaders.append("Authorization", `Bearer ${token}`)
+
+                const requestOptions = {
+                    method : "POST",
+                    headers: requestHeaders,
+                    body: JSON.stringify(darajaRequestBody)
+                }
+
+                const request = new Request(merchantEndpoint, requestOptions)
+                const response = await fetch(request)
+                if(response.error){
+                    console.error("Bill Manager Single Invoicing Error:", response.error)
+                    reject(response.error)
+                    return;
+                }
+
+                const data = await response.json();
+                console.log("Successfully created Bill Manager single invoice.")
+                resolve(data)
+                return;
+            });
+        }catch(error){
+            console.error({
+                message: error.message,
+                code: error.code
+            })
+        }
+    }
+
+    /**
+        *
+        * Bill Manager invoicing service enables you to create and send 
+        * e-invoices to your customers. Single invoicing functionality will 
+        * allow you to send out customized individual e-invoices. Your 
+        * customers will receive this notification(s) via an SMS to the 
+        * Safaricom phone number specified while creating the invoice.
+        *
+        * A customer can still opt to pay via USSD, Sim toolkit, M-PESA App,
+        * Safaricom App to your paybill number as long as they reference 
+        * the correct account number (account reference) as specified 
+        * on the invoice.
+        *
+        * To send multiple e-invoices you specify the fields in the "bulk"
+        * array section.
+        *
+        * You can send up to 1000 invoices for each call you make on the
+        * bulk-invoice API.
+        *
+        * The appKey needs to be in the Header of every Service Request
+        * provided to you during onboarding.
+        *
+        * @typedef {Object} invoiceItem
+        * @property {string} itemName
+        * @property {string} amount
+        *
+        * @typedef {Object} invoice
+        * @property {string} externalReference
+        * @property {string} billedFullName
+        * @property {string} billedPhoneNumber
+        * @property {string} billedPeriod
+        * @property {string} invoiceName
+        * @property {string} dueDate
+        * @property {string} accountReference
+        * @property {string} amount
+        * @property {invoiceItem[]} invoiceItems
+        * 
+        * @param {invoice[]} invoices 
         *
         **/
     async billManagerBulkInvoicing(invoices){
@@ -1173,6 +1296,29 @@ export default class Mpesa{
                 const merchantEndpoint = `${this.url}${this.urls.bill_manager_bulk_invoicing}`
 
                 const darajaRequestBody = invoices || [];
+
+                const requestHeaders = new Headers();
+                requestHeaders.append("Content-Type","application/json")
+                requestHeaders.append("Authorization", `Bearer ${token}`)
+
+                const requestOptions = {
+                    method : "POST",
+                    headers: requestHeaders,
+                    body: JSON.stringify(darajaRequestBody)
+                }
+
+                const request = new Request(merchantEndpoint, requestOptions)
+                const response = await fetch(request)
+                if(response.error){
+                    console.error("Bill Manager Bulk Invoicing Error:", response.error)
+                    reject(response.error)
+                    return;
+                }
+
+                const data = await response.json();
+                console.log("Successfully created Bill Manager Bulk Invoices.");
+                resolve(data)
+                return;
             });
         }catch(error){
             console.error({
@@ -1182,21 +1328,85 @@ export default class Mpesa{
         }
     }
 
-    async billManagerReconciliation(){
+    /**
+        *
+        * The bill manager payment feature enables your customers to receive 
+        * e-receipts for payments made to your paybill account.
+        *
+        * Pre-Condition:
+        * Your business pay bill must have been onboarded to bill manager 
+        * for us to push payments to you and for bill manager to receive 
+        * your payment acknowledgment details. Please see the bill manager 
+        * onboarding documentation for more details.
+        *
+        * Bill Manager Payments flow.
+        * 1.   An M-PESA Customer will make a C2B payment to your pay bill 
+        *      number with the correct account number (account reference) 
+        *      via the USSD, Sim tool kit, M-PESA App, Safaricom App, and 
+        *      from the bill manager e-invoice.
+        *
+        * 2.   Bill Manager will receive the payment and push it to you 
+        *      for acknowledgment via the call-back URL you provided during 
+        *      onboarding. The payments will have the following structure.
+        *
+        * Important Information
+        * 
+        * We will try to send payment details 5 times to your callback URL 
+        * before cancelling the request.
+        *
+        * @param {Object} param0 
+        * @param {string} param0.transaction_id 
+        * @param {string} param0.amount - KES 
+        * @param {string} param0.customer_phone_number - 2547XXXXXXXX
+        * @param {string} param0.date_created - YYYY-MM-DD
+        * @param {string} param0.account_number 
+        * @param {string} param0.short_code 
+        *
+    * */
+    async billManagerReconciliation({
+        transaction_id,
+        amount,
+        customer_phone_number,
+        date_created, 
+        account_number,
+        short_code
+    }){
         try{
             return new Promise(async (resolve, reject)=>{
                 const token = await this.generateToken();
                 const merchantEndpoint = `${this.url}${this.urls.bill_manager_reconciliation}`
 
                 const darajaRequestBody  = {
-                    "transactionId":"{trandID}", 
-                    "paidAmount":"{50}", 
-                    "msisdn":"254710119383", 
-                    "dateCreated":"2021-09-15", 
-                    "accountReference":"LGHJIO789", 
-                    "shortCode":"349350555"
+                    "transactionId": `${transaction_id}`, 
+                    "paidAmount":`{${amount}}`, 
+                    "msisdn": `${customer_phone_number}`, 
+                    "dateCreated":`${date_created}`, 
+                    "accountReference": `${account_number}`, 
+                    "shortCode": `${short_code}`
                 }
 
+                const requestHeaders = new Headers();
+                requestHeaders.append("Content-Type","application/json")
+                requestHeaders.append("Authorization", `Bearer ${token}`)
+
+                const requestOptions = {
+                    method : "POST",
+                    headers: requestHeaders,
+                    body: JSON.stringify(darajaRequestBody)
+                }
+
+                const request = new Request(merchantEndpoint, requestOptions)
+                const response = await fetch(request)
+                if(response.error){
+                    console.error("Bill Manager Reconciliation Error:", response.error)
+                    reject(response.error)
+                    return;
+                }
+
+                const data = await response.json();
+                console.log("Successfully created Bill Manager Reconciliation");
+                resolve(data)
+                return;
 
             });
         }catch(error){
@@ -1207,14 +1417,171 @@ export default class Mpesa{
         }
     }
 
-    async billManagerCancelSingleInvoicing(){
+    /**
+        *
+        * The single cancel invoice API allows you to recall a sent invoice. 
+        * This means the invoice will cease to exist and cannot be used as 
+        * a reference to a payment.
+        *
+        * @param {string} externalReference 
+        *
+    * */
+    async billManagerCancelSingleInvoicing(externalReference){
         try{
             return new Promise(async (resolve, reject)=>{
                 const token = await this.generateToken();
                 const merchantEndpoint = `${this.url}${this.urls.bill_manager_cancel_single_invoicing}`;
                 const darajaRequestBody = { 
-                    "externalReference":"113",
+                    "externalReference":`${externalReference}`,
                 }
+
+                const requestHeaders = new Headers();
+                requestHeaders.append("Content-Type","application/json")
+                requestHeaders.append("Authorization", `Bearer ${token}`)
+
+                const requestOptions = {
+                    method : "POST",
+                    headers: requestHeaders,
+                    body: JSON.stringify(darajaRequestBody)
+                }
+
+                const request = new Request(merchantEndpoint, requestOptions)
+                const response = await fetch(request)
+                if(response.error){
+                    console.error("Dynamic QR code Error:", response.error)
+                    reject(response.error)
+                    return;
+                }
+
+                const data = await response.json();
+                console.log("Successfully created Dynamic QR code")
+                resolve(data)
+                return;
+
+            });
+        }catch(error){
+            console.error({
+                message: error.message,
+                code: error.code
+            })
+        }
+    }
+
+    /**
+        *
+        * The bulk cancel invoice API allows to recall more than one 
+        * sent invoice.
+        *
+        * @typedef {Object} externalReference_t
+        * @property {string} externalReference
+        *
+        * @param {externalReference_t[]} references 
+        *
+        *
+    * */
+    async billManagerCancelBulkInvoicing(references){
+        try{
+            return new Promise(async (resolve, reject)=>{
+                const token = await this.generateToken();
+                const merchantEndpoint = `${this.url}${this.urls.bill_manager_cancel_bulk_invoicing}`
+                const darajaRequestBody =  [...references] || [];
+
+                const requestHeaders = new Headers();
+                requestHeaders.append("Content-Type","application/json")
+                requestHeaders.append("Authorization", `Bearer ${token}`)
+
+                const requestOptions = {
+                    method : "POST",
+                    headers: requestHeaders,
+                    body: JSON.stringify(darajaRequestBody)
+                }
+
+                const request = new Request(merchantEndpoint, requestOptions)
+                const response = await fetch(request)
+                if(response.error){
+                    console.error("Dynamic QR code Error:", response.error)
+                    reject(response.error)
+                    return;
+                }
+
+                const data = await response.json();
+                console.log("Successfully created Dynamic QR code")
+                resolve(data)
+                return;
+
+            });
+        }catch(error){
+            console.error({
+                message: error.message,
+                code: error.code
+            })
+        }
+    }
+
+    /**
+        *
+        * This is the API used to update opt-in details.  
+        *
+        * Important Information
+        *
+        * You will use your Daraja access token for all the bill 
+        * manager-integrated APIs.
+        * You can use the same consumer key for multiple shortcodes 
+        * that belong to that consumer key.
+        *
+        *@param {Object} param0 
+        * @param {string} param0.short_code 
+        * @param {string} param0.email 
+        * @param {string} param0.phone = 07XXXXXXXX 
+        * @param {boolean} param0.send_reminders - 0(False) or 1(True)
+        * @param {string} param0.logo 
+        * @param {string} param0.callback_url 
+        *
+    * */
+    async billManagerUpdateOnBoardingDetails({
+        short_code,
+        email,
+        phone,
+        send_reminders,
+        logo,
+        callback_url
+    }){
+        try{
+            return new Promise(async (resolve, reject)=>{
+                const token = await this.generateToken();
+                const merchantEndpoint = `${this.url}${this.urls.bill_manager_update_onboarding_details}`
+                const darajaRequestBody = {
+                    "shortcode": `${short_code}`,    
+                    "email":`${email}`,    
+                    "officialContact": `${phone}`,    
+                    "sendReminders": send_reminders ? 1 : 0,    
+                    "shortcode": `${short_code}`,    
+                    "logo": `${logo}`,
+                    "callbackurl": `${callback_url}`
+                }
+
+                const requestHeaders = new Headers();
+                requestHeaders.append("Content-Type","application/json")
+                requestHeaders.append("Authorization", `Bearer ${token}`)
+
+                const requestOptions = {
+                    method : "POST",
+                    headers: requestHeaders,
+                    body: JSON.stringify(darajaRequestBody)
+                }
+
+                const request = new Request(merchantEndpoint, requestOptions)
+                const response = await fetch(request)
+                if(response.error){
+                    console.error("Dynamic QR code Error:", response.error)
+                    reject(response.error)
+                    return;
+                }
+
+                const data = await response.json();
+                console.log("Successfully created Dynamic QR code")
+                resolve(data)
+                return;
 
 
             });
@@ -1228,78 +1595,72 @@ export default class Mpesa{
 
     /**
         *
-        * @param {{ 
-        *  "externalReference": string
-        * }[]} references 
+        * @typedef {Object} inventoryItem
+        * @property {string} itemName
+        * @property {string} amount
+        *
+        *
+        * @param {Object} param0 
+        * @param {string} param0.external_reference 
+        * @param {string} param0.customer_full_name 
+        * @param {string} param0.customer_phone - 07XXXXXXXX
+        * @param {string} param0.billed_period - "Month Year"
+        * @param {string} param0.invoice_title 
+        * @param {string} param0.due_date - YYYY-MM-DD
+        * @param {string} param0.account_number 
+        * @param {string} param0.amount 
+        * @param {inventoryItem[]} param0.invoice_items 
         *
     * */
-    async billManagerCancelBulkInvoicing(references){
-        try{
-            return new Promise(async (resolve, reject)=>{
-                const token = await this.generateToken();
-                const merchantEndpoint = `${this.url}${this.urls.bill_manager_cancel_bulk_invoicing}`
-                const drajaRequestBody =  references || [];
-
-            });
-        }catch(error){
-            console.error({
-                message: error.message,
-                code: error.code
-            })
-        }
-    }
-
-    async billManagerUpdateOnBoardingDetails(){
-        try{
-            return new Promise(async (resolve, reject)=>{
-                const token = await this.generateToken();
-                const merchantEndpoint = `${this.url}${this.urls.bill_manager_update_onboarding_details}`
-                const darajaRequestBody = {
-                    "shortcode":"718003",    
-                    "email":"youremail@gmail.com",    
-                    "officialContact":"0710XXXXXX",    
-                    "sendReminders":1,    
-                    "shortcode":"718003",    
-                    "logo": "image",
-                    "callbackurl": "/api.example.com/payments?callbackURL=http://my.server.com/bar"
-                }
-
-
-            });
-        }catch(error){
-            console.error({
-                message: error.message,
-                code: error.code
-            })
-        }
-    }
-
-    async billManagerUpdateSingleInvoicing(){
+    async billManagerUpdateSingleInvoicing({
+        external_reference,
+        customer_full_name,
+        customer_phone,
+        billed_period,
+        invoice_title,
+        due_date, 
+        account_number,
+        amount,
+        invoice_items
+    }){
         try{
             return new Promise(async (resolve, reject)=>{
                 const token = await this.generateToken();
                 const merchantEndpoint = `${this.url}${this.urls.bill_manager_single_invoicing}`
-                const darajarequestBody = {
-                    "externalReference": "#9932340",
-                    "billedFullName":  "John Doe",
-                    "billedPhoneNumber":  "07XXXXXXXX",
-                    "billedPeriod":"August 2021",
-                    "invoiceName":"Jentrys",
-                    "dueDate":"2021-10-12",
-                    "accountReference":"1ASD678H",
-                    "amount":"800",
-                    //"invoiceItems":[
-                    //    {
-                    //        "itemName":"food",
-                    //        "amount":"700"
-                    //    },
-                    //    {
-                    //        "itemName":"water",
-                    //        "amount":"100"
-                    //   }
-                    // ]
-                    "invoiceItems": []
+                const darajaRequestBody = {
+                    "externalReference": `${external_reference}`,
+                    "billedFullName":  `${customer_full_name}`,
+                    "billedPhoneNumber":  `${customer_phone}`,
+                    "billedPeriod": `${billed_period}`,
+                    "invoiceName": `${invoice_title}`,
+                    "dueDate": `${due_date}`,
+                    "accountReference": `${account_number}`,
+                    "amount": `${amount}`,
+                    "invoiceItems": [...invoice_items] || []
                 }
+
+                const requestHeaders = new Headers();
+                requestHeaders.append("Content-Type","application/json")
+                requestHeaders.append("Authorization", `Bearer ${token}`)
+
+                const requestOptions = {
+                    method : "POST",
+                    headers: requestHeaders,
+                    body: JSON.stringify(darajaRequestBody)
+                }
+
+                const request = new Request(merchantEndpoint, requestOptions)
+                const response = await fetch(request)
+                if(response.error){
+                    console.error("Dynamic QR code Error:", response.error)
+                    reject(response.error)
+                    return;
+                }
+
+                const data = await response.json();
+                console.log("Successfully created Dynamic QR code")
+                resolve(data)
+                return;
             
             });
         }catch(error){
@@ -1313,24 +1674,23 @@ export default class Mpesa{
 
     /**
     *
-    * {
-    *    "externalReference": string,
-    *    "billedFullName":  string,
-    *    "billedPhoneNumber": string,,
-    *    "billedPeriod": string,
-    *    "invoiceName":string,
-    *    "dueDate": string,,
-    *    "accountReference":string,
-    *    "amount": string,,
-    *    "invoiceItems":[
-    *                    {
-    *                    "itemName": string,
-    *                    "amount": string
-    *                   }
-    *               ]
-    * }
-    *   
+    * @typedef {Object} invoiceItem
+    * @property {string} itemName
+    * @property {string} amount
     *
+    *
+    * @typedef {Object} invoice
+    * @property {string} externalReference
+    * @property {string} billedFullName
+    * @property {string} billedPhoneNumber
+    * @property {string} billedPeriod
+    * @property {string} invoiceName
+    * @property {string} dueDate - YYYY-MM-DD HH:MM:SS.MS
+    * @property {string} accountReference
+    * @property {string} amount
+    * @property {invoiceItem[]} invoiceItems
+    * 
+    * @param {invoice[]} invoices   
     *
     * */
     async billManagerUpdateBulkInvoicing(invoices){
@@ -1339,6 +1699,31 @@ export default class Mpesa{
                 const token = await this.generateToken();
                 const merchantEndpoint = `${this.url}${this.urls.bill_manager_bulk_invoicing}`
 
+                const darajaRequestBody = [...invoices] || [];
+
+                const requestHeaders = new Headers();
+                requestHeaders.append("Content-Type","application/json")
+                requestHeaders.append("Authorization", `Bearer ${token}`)
+
+
+                const requestOptions = {
+                    method : "POST",
+                    headers: requestHeaders,
+                    body: JSON.stringify(darajaRequestBody)
+                }
+
+                const request = new Request(merchantEndpoint, requestOptions)
+                const response = await fetch(request)
+                if(response.error){
+                    console.error("Dynamic QR code Error:", response.error)
+                    reject(response.error)
+                    return;
+                }
+
+                const data = await response.json();
+                console.log("Successfully created Dynamic QR code")
+                resolve(data)
+                return;
             });
         }catch(error){
             console.error({
