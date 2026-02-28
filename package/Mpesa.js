@@ -155,7 +155,7 @@ export default class Mpesa{
                     "Password": passwordSaf,
                     "Timestamp": timestamp,
                     "TransactionType": "CustomerPayBillOnline", //Switch to Customer Buy Goods
-                    "Amount": parseInt(amountFromUser),
+                    "Amount": parseFloat(amountFromUser),
                     "PartyA": parseInt(`254${phoneNumber}`),
                     "PartyB": parseInt(businessNumber),
                     "PhoneNumber": parseInt(`254${phoneNumber}`),
@@ -1029,7 +1029,6 @@ export default class Mpesa{
         * @param {number} [param0.qr_code_size=300] 
         *
     * */
-
     async dynamicQRCode({
         your_business_name,
         reference_value,
@@ -1093,6 +1092,15 @@ export default class Mpesa{
             return new Promise(async (resolve, reject)=>{
                 const token = await this.generateToken();
                 const merchantEndpoint = `${this.url}${this.urls.bill_manager_invoice_optin}`
+
+                const darajaRequestBody = {  
+                    "shortcode":"718003",
+                    "email":"youremail@gmail.com",
+                    "officialContact":"0710XXXXXX",
+                    "sendReminders":"1",
+                    "logo":"image",
+                    "callbackurl":"http://my.server.com/bar/callback"
+                }
             });
         }catch(error){
             console.error({
@@ -1107,6 +1115,27 @@ export default class Mpesa{
             return new Promise(async (resolve, reject)=>{
                 const token = await this.generateToken();
                 const merchantEndpoint = `${this.url}${this.urls.bill_manager_single_invoicing}`
+
+                const darajaRequestBody =  {
+                    "externalReference": "#9932340",
+                    "billedFullName":  "John Doe",
+                    "billedPhoneNumber":  "07XXXXXXXX",
+                    "billedPeriod":"August 2021",
+                    "invoiceName":"Jentrys",
+                    "dueDate":"2021-10-12",
+                    "accountReference":"1ASD678H",
+                    "amount":"800",
+                    "invoiceItems":[
+                        {
+                            "itemName":"food",
+                            "amount":"700"
+                        },
+                        {
+                            "itemName":"water",
+                            "amount":"100"
+                        }
+                    ]
+                } 
             });
         }catch(error){
             console.error({
@@ -1116,11 +1145,34 @@ export default class Mpesa{
         }
     }
 
-    async billManagerBulkInvoicing(){
+    /**
+        *
+        *
+        * @param { 
+        *  {
+        *    "externalReference": string,
+        *    "billedFullName": string,
+        *    "billedPhoneNumber": string,
+        *    "billedPeriod": string,
+        *    "invoiceName": string,
+        *    "dueDate": string,
+        *    "accountReference": string,
+        *    "amount": string,
+        *    "invoiceItems": {
+        *            "itemName": string,
+        *            "amount": string
+        *        }[]
+        * }[]
+        * } invoices
+        *
+        **/
+    async billManagerBulkInvoicing(invoices){
         try{
             return new Promise(async (resolve, reject)=>{
                 const token = await this.generateToken();
                 const merchantEndpoint = `${this.url}${this.urls.bill_manager_bulk_invoicing}`
+
+                const darajaRequestBody = invoices || [];
             });
         }catch(error){
             console.error({
@@ -1135,6 +1187,17 @@ export default class Mpesa{
             return new Promise(async (resolve, reject)=>{
                 const token = await this.generateToken();
                 const merchantEndpoint = `${this.url}${this.urls.bill_manager_reconciliation}`
+
+                const darajaRequestBody  = {
+                    "transactionId":"{trandID}", 
+                    "paidAmount":"{50}", 
+                    "msisdn":"254710119383", 
+                    "dateCreated":"2021-09-15", 
+                    "accountReference":"LGHJIO789", 
+                    "shortCode":"349350555"
+                }
+
+
             });
         }catch(error){
             console.error({
@@ -1149,6 +1212,11 @@ export default class Mpesa{
             return new Promise(async (resolve, reject)=>{
                 const token = await this.generateToken();
                 const merchantEndpoint = `${this.url}${this.urls.bill_manager_cancel_single_invoicing}`;
+                const darajaRequestBody = { 
+                    "externalReference":"113",
+                }
+
+
             });
         }catch(error){
             console.error({
@@ -1158,11 +1226,20 @@ export default class Mpesa{
         }
     }
 
-    async billManagerCancelBulkInvoicing(){
+    /**
+        *
+        * @param {{ 
+        *  "externalReference": string
+        * }[]} references 
+        *
+    * */
+    async billManagerCancelBulkInvoicing(references){
         try{
             return new Promise(async (resolve, reject)=>{
                 const token = await this.generateToken();
                 const merchantEndpoint = `${this.url}${this.urls.bill_manager_cancel_bulk_invoicing}`
+                const drajaRequestBody =  references || [];
+
             });
         }catch(error){
             console.error({
@@ -1172,11 +1249,22 @@ export default class Mpesa{
         }
     }
 
-    async billManagerUpdateOnBoardingdetails(){
+    async billManagerUpdateOnBoardingDetails(){
         try{
             return new Promise(async (resolve, reject)=>{
                 const token = await this.generateToken();
                 const merchantEndpoint = `${this.url}${this.urls.bill_manager_update_onboarding_details}`
+                const darajaRequestBody = {
+                    "shortcode":"718003",    
+                    "email":"youremail@gmail.com",    
+                    "officialContact":"0710XXXXXX",    
+                    "sendReminders":1,    
+                    "shortcode":"718003",    
+                    "logo": "image",
+                    "callbackurl": "/api.example.com/payments?callbackURL=http://my.server.com/bar"
+                }
+
+
             });
         }catch(error){
             console.error({
@@ -1191,6 +1279,28 @@ export default class Mpesa{
             return new Promise(async (resolve, reject)=>{
                 const token = await this.generateToken();
                 const merchantEndpoint = `${this.url}${this.urls.bill_manager_single_invoicing}`
+                const darajarequestBody = {
+                    "externalReference": "#9932340",
+                    "billedFullName":  "John Doe",
+                    "billedPhoneNumber":  "07XXXXXXXX",
+                    "billedPeriod":"August 2021",
+                    "invoiceName":"Jentrys",
+                    "dueDate":"2021-10-12",
+                    "accountReference":"1ASD678H",
+                    "amount":"800",
+                    //"invoiceItems":[
+                    //    {
+                    //        "itemName":"food",
+                    //        "amount":"700"
+                    //    },
+                    //    {
+                    //        "itemName":"water",
+                    //        "amount":"100"
+                    //   }
+                    // ]
+                    "invoiceItems": []
+                }
+            
             });
         }catch(error){
             console.error({
@@ -1200,11 +1310,35 @@ export default class Mpesa{
         }
     }
 
-    async billManagerUpdateBulkInvoicing(){
+
+    /**
+    *
+    * {
+    *    "externalReference": string,
+    *    "billedFullName":  string,
+    *    "billedPhoneNumber": string,,
+    *    "billedPeriod": string,
+    *    "invoiceName":string,
+    *    "dueDate": string,,
+    *    "accountReference":string,
+    *    "amount": string,,
+    *    "invoiceItems":[
+    *                    {
+    *                    "itemName": string,
+    *                    "amount": string
+    *                   }
+    *               ]
+    * }
+    *   
+    *
+    *
+    * */
+    async billManagerUpdateBulkInvoicing(invoices){
         try{
             return new Promise(async (resolve, reject)=>{
                 const token = await this.generateToken();
                 const merchantEndpoint = `${this.url}${this.urls.bill_manager_bulk_invoicing}`
+
             });
         }catch(error){
             console.error({
