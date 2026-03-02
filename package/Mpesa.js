@@ -113,12 +113,21 @@ export default class Mpesa{
         * LIPA NA M-PESA ONLINE API also known as M-PESA express is a 
         * Merchant/Business initiated C2B (Customer to Business) transaction.
         *
+        * @typedef {Object} data
+        * @property {string} MerchantRequestID
+        * @property {string} CheckoutRequestID
+        * @property {string} ResponseCode
+        * @property {string} ResponseDescription
+        * @property {string} CustomerMessage
+        *
         * @param {Object} param0 
         * @param {string} param0.phone 
         * @param {string} param0.amount 
         * @param {string} param0.tillOrPayBillNumber 
         * @param {string} param0.account_reference 
         * @param {string} param0.transaction_desc 
+        *
+        * @returns {data}
         *
     **/
     async express({
@@ -197,9 +206,19 @@ export default class Mpesa{
         *
         * Use this method to check the status of a Lipa Na M-Pesa Online Payment.
         *
+        * @typeef {Object} data
+        * @property {string} ResponseCode
+        * @property {string} ResponseDescription
+        * @property {string} MerchantRequestID
+        * @property {string} CheckoutRequestID
+        * @property {string} ResultCode
+        * @property {string} ResultDesc
+        *
         * @param {Object} param0 
         * @param {string} param0.tillOrPayBillNumber 
         * @param {string} param0.CheckoutRequestID 
+        *
+        * @returns {data}
         *
     **/
     async expressPushQuery({ tillOrPayBillNumber, CheckoutRequestID }){
@@ -259,6 +278,12 @@ export default class Mpesa{
         * 
         * Reversals API enables the reversal of Customer-to-Business (C2B) transactions.
         *
+        * @typedef {Object} data
+        * @property {string} OriginatorConversationID
+        * @property {string} ConversationID
+        * @property {string} ResponseCode
+        * @property {string} ResponseDescription
+        * 
         * @param {Object} param0 
         * @param {string} param0.mpesa_business_username 
         * @param {string} param0.api_shortcode 
@@ -267,6 +292,8 @@ export default class Mpesa{
         * @param {string} param0.timeoutURL 
         * @param {string} param0.resultURL 
         * @param {string} param0.transactionID 
+        *
+        * @returns {data}
         *
     **/
     async reversal({
@@ -391,11 +418,18 @@ export default class Mpesa{
         * Note: As you set up the default value, the words 
         * "Cancelled/Completed" must be in sentence case and well-spelled.
         *
+        * @typedef {Object} data
+        * @property {string} OriginatorCoversationID
+        * @property {string} ResponseCode
+        * @property {string} ResponseDescription
+        *
         * @param {Object} param0 
         * @param {string} param0.ShortCode 
         * @param {string} param0.ConfirmationURL 
         * @param {string} param0.ValidationURL 
-        * @param {string} [param0.ResponseType="Completed"] 
+        * @param {string} [param0.ResponseType="Completed"]
+        *
+        * @returns {data}
     * */
     async customerToBusiness({
         ShortCode,
@@ -457,11 +491,18 @@ export default class Mpesa{
         *
         * Register validation and confirmation URLs on M-Pesa
         *
+        * @typedef {Object} data
+        * @property {string} OriginatorCoversationID
+        * @property {string} ResponseCode
+        * @property {string} ResponseDescription
+        *
         * @param {Object} param0 
         * @param {string} param0.ShortCode 
         * @param {string} [param0.ResponseType="Completed"] "Completed" | "Cancelled" 
         * @param {string} param0.ConfirmationURL 
         * @param {string} param0.ValidationURL 
+        *
+        * @returns {data}
         *
     * */
     async customerToBusinessv1({
@@ -525,6 +566,12 @@ export default class Mpesa{
         * transaction, you are required to have either an M-Pesa Receipt number 
         * or an Originator Conversation ID of the transaction
         *
+        * @typedef {Object} data
+        * @property {string} OriginatorConversationID
+        * @property {string} ConversationID
+        * @property {string} ResponseCode
+        * @property {string} ResponseDescription
+        *
         * @param {Object} param0 
         * @param {string} param0.api_username 
         * @param {string} param0.transaction_id 
@@ -535,6 +582,8 @@ export default class Mpesa{
         * @param {string} param0.result_url 
         * @param {string} param0.queue_timeout_url 
         * @param {string} param0.OriginalConversationID 
+        *
+        * @returns {data}
         *
     * */
     async transactionStatus({
@@ -613,12 +662,20 @@ export default class Mpesa{
         *   - Automated Responses: Receive automatic acknowledgments and 
         *   responses to inquiries.
         *
+        * @typedef {Object} data
+        * @property {string} OriginatorConversationID
+        * @property {string} ConversationID
+        * @property {string} ResponseCode
+        * @property {string} ResponseDescription
+        *
         * @param {Object} param0 
         * @param {string} param0.api_username 
         * @param {string} param0.short_code 
         * @param {string} param0.queueTimeoutURL 
         * @param {string} param0.resultURL 
         * @param {string} param0.remarks
+        *
+        * @returns {data}
         *
         *
     * */
@@ -682,6 +739,13 @@ export default class Mpesa{
         * B2C API is used to make payments from a Business to Customers'
         * number also known as Bulk Disbursements.
         *
+        * @typedef {Object} data
+        * @property {string} ConversationID
+        * @property {string} OriginatorConversationID
+        * @property {string} ResponseCode
+        * @property {string} ResponseDescription
+        *
+        *
         * @param {Object} param0 
         * @param {string} param0.OriginatorConversationID 
         * @param {string} param0.api_username 
@@ -692,6 +756,8 @@ export default class Mpesa{
         * @param {string} param0.queue_timeout_url 
         * @param {string} param0.result_url 
         * @param {string} [param0.occassion="payout"] 
+        *
+        * @returns {data}
         *
     * */
     async businessToCustomer({
@@ -763,6 +829,12 @@ export default class Mpesa{
         * business account to a till number, merchant store number 
         * or Merchant HO.
         *
+        * @typedef {Object} data
+        * @property {string} OriginatorConversationID
+        * @property {string} ConversationID
+        * @property {string} ResponseCode
+        * @property {string} ResponseDescription
+        *
         * @param {Object} param0 
         * @param {string} param0.api_username 
         * @param {string} param0.api_short_code 
@@ -772,7 +844,9 @@ export default class Mpesa{
         * @param {string} param0.requester_phone_number 
         * @param {string} [param0.remarks="OK"] 
         * @param {string} param0.timeoutURL 
-        * @param {string} param0.resultURL 
+        * @param {string} param0.resultURL
+        *
+        * @returns {data}
         *
     * */
     async businessToBusinessBuyGoods({
@@ -843,6 +917,12 @@ export default class Mpesa{
         * This API enables you to pay bills directly from your business 
         * account to a pay bill number, or a paybill store.
         *
+        * @typedef {Object} data
+        * @property {string} OriginatorConversationID
+        * @property {string} ConversationID
+        * @property {string} ResponseCode
+        * @property {string} ResponseDescription
+        *
         * @param {Object} param0 
         * @param {string} param0.api_username 
         * @param {string} param0.api_short_code 
@@ -853,6 +933,9 @@ export default class Mpesa{
         * @param {string} [param0.remarks="OK"] 
         * @param {string} param0.queue_timeout_url 
         * @param {string} param0.result_url 
+        *
+        *
+        * @returns {data}
         *
     * */
     async businessToBusinessPaybill({
@@ -923,6 +1006,12 @@ export default class Mpesa{
         * This API enables you to pay bills directly from your business 
         * account to a pay bill number, or a paybill store.
         *
+        * @typedef {Object} data
+        * @property {string} OriginatorConversationID
+        * @property {string} ConversationID
+        * @property {string} ResponseCode
+        * @property {string} ResponseDescription
+        *
         * @param {Object} param0
         * @param {string} param0.api_username
         * @param {string} param0.api_short_code
@@ -932,6 +1021,8 @@ export default class Mpesa{
         * @param {string} [param0.remarks = "OK"]
         * @param {string} param0.queue_timeout_url
         * @param {string} param0.result_url
+        *
+        * @returns {data}
         *
     * */ 
     async businessToCustomerAccountTopup({
@@ -1019,6 +1110,11 @@ export default class Mpesa{
         * qr_code_size: Size of the QR code image in pixels. QR code image 
         * will always be a square image.
         *
+        * @typedef {Object} data
+        * @property {string} ResponseCode
+        * @property {string} RequestID
+        * @property {string} ResponseDescription
+        * @property {string} QRCode
         *
         * @param {Object} param0 
         * @param {string} param0.your_business_name 
@@ -1027,6 +1123,8 @@ export default class Mpesa{
         * @param {string} param0.transaction_type
         * @param {string} param0.credit_party_identifier 
         * @param {number} [param0.qr_code_size=300] 
+        *
+        * @returns {data}
         *
     * */
     async dynamicQRCode({
@@ -1098,6 +1196,11 @@ export default class Mpesa{
         * with a success response, your shortcode is whitelisted and you 
         * are able to integrate with all the other remaining bill manager APIs.
         *
+        * @typedef {Object} data
+        * @property {string} app_key
+        * @property {string} resmsg
+        * @property {string} rescode
+        *
         * @param {Object} param0 
         * @param {string} param0.shortcode - required
         * @param {string} param0.email - required
@@ -1105,6 +1208,8 @@ export default class Mpesa{
         * @param {boolean} param0.send_reminders - 0 (False) or 1 (True) required
         * @param {string} param0.logo - JPEG, JPG optional
         * @param {string} param0.callbackURL - required
+        *
+        * @returns {data} 
         *
     * */
     async billManagerInvoiceOptin({
@@ -1174,6 +1279,11 @@ export default class Mpesa{
         * the correct account number (account reference) as specified on 
         * the invoice.
         *
+        * @typedef {Object} data
+        * @property {string} Status_Message
+        * @property {string} resmsg
+        * @property {string} rescode
+        *
         * @typedef {Object} invoice_item
         * @property {string} itemName
         * @property {string} amount
@@ -1188,6 +1298,8 @@ export default class Mpesa{
         * @param {string} param0.account_reference 
         * @param {string} param0.amount 
         * @param {invoice_item[]} param0.invoice_items 
+        *
+        * @returns {data}
         *
     * */
     async billManagerSingleInvoicing({
@@ -1271,6 +1383,11 @@ export default class Mpesa{
         * The appKey needs to be in the Header of every Service Request
         * provided to you during onboarding.
         *
+        * @typedef {Object} data
+        * @property {string} Status_Message
+        * @property {string} resmsg
+        * @property {string} rescode
+        *
         * @typedef {Object} invoiceItem
         * @property {string} itemName
         * @property {string} amount
@@ -1287,6 +1404,7 @@ export default class Mpesa{
         * @property {invoiceItem[]} invoiceItems
         * 
         * @param {invoice[]} invoices 
+        * @returns {data}
         *
         **/
     async billManagerBulkInvoicing(invoices){
@@ -1354,6 +1472,10 @@ export default class Mpesa{
         * We will try to send payment details 5 times to your callback URL 
         * before cancelling the request.
         *
+        * @typedef {Object} data
+        * @property {string} resmsg
+        * @property {string} rescode
+        *
         * @param {Object} param0 
         * @param {string} param0.transaction_id 
         * @param {string} param0.amount - KES 
@@ -1361,6 +1483,8 @@ export default class Mpesa{
         * @param {string} param0.date_created - YYYY-MM-DD
         * @param {string} param0.account_number 
         * @param {string} param0.short_code 
+        *
+        * @returns {data}
         *
     * */
     async billManagerReconciliation({
@@ -1423,7 +1547,15 @@ export default class Mpesa{
         * This means the invoice will cease to exist and cannot be used as 
         * a reference to a payment.
         *
+        * @typedef {Object} data
+        * @property {string} Status_Message
+        * @property {string} resmsg
+        * @property {string} rescode
+        * @property {Object} errors
+        *
         * @param {string} externalReference 
+        *
+        * @returns {data}
         *
     * */
     async billManagerCancelSingleInvoicing(externalReference){
@@ -1471,11 +1603,19 @@ export default class Mpesa{
         *
         * The bulk cancel invoice API allows to recall more than one 
         * sent invoice.
+        * @typedef {Object} data
+        * @property {string} Status_Message 
+        * @property {string} resmsg
+        * @property {string} rescode
+        * @property {string} errors
+        *
         *
         * @typedef {Object} externalReference_t
         * @property {string} externalReference
         *
         * @param {externalReference_t[]} references 
+        *
+        * @returns {data}
         *
         *
     * */
@@ -1529,6 +1669,10 @@ export default class Mpesa{
         * You can use the same consumer key for multiple shortcodes 
         * that belong to that consumer key.
         *
+        * @typedef {Object} data
+        * @property {string} resmsg
+        * @property {string} rescode
+        *
         *@param {Object} param0 
         * @param {string} param0.short_code 
         * @param {string} param0.email 
@@ -1536,6 +1680,8 @@ export default class Mpesa{
         * @param {boolean} param0.send_reminders - 0(False) or 1(True)
         * @param {string} param0.logo 
         * @param {string} param0.callback_url 
+        *
+        * @returns {data}
         *
     * */
     async billManagerUpdateOnBoardingDetails({
