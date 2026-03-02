@@ -1,5 +1,8 @@
 import { Request } from "node-fetch";
-
+/**
+    *@description Represents Daraja 3.0 API endpoints and their API calls
+    *@class
+ * */
 export default class Mpesa{
 
     constructor({ callbackURL, consumerSecret, consumerKey, passKey, mpesaBaseUrl}){
@@ -127,7 +130,7 @@ export default class Mpesa{
         * @param {string} param0.account_reference 
         * @param {string} param0.transaction_desc 
         *
-        * @returns {data}
+        * @returns {data} - Successful API call return type
         *
     **/
     async express({
@@ -218,7 +221,7 @@ export default class Mpesa{
         * @param {string} param0.tillOrPayBillNumber 
         * @param {string} param0.CheckoutRequestID 
         *
-        * @returns {data}
+        * @returns {data} - Successful API call return type
         *
     **/
     async expressPushQuery({ tillOrPayBillNumber, CheckoutRequestID }){
@@ -293,7 +296,7 @@ export default class Mpesa{
         * @param {string} param0.resultURL 
         * @param {string} param0.transactionID 
         *
-        * @returns {data}
+        * @returns {data}i - Successful API call return type
         *
     **/
     async reversal({
@@ -429,7 +432,7 @@ export default class Mpesa{
         * @param {string} param0.ValidationURL 
         * @param {string} [param0.ResponseType="Completed"]
         *
-        * @returns {data}
+        * @returns {data} - Successful API call return type
     * */
     async customerToBusiness({
         ShortCode,
@@ -502,7 +505,7 @@ export default class Mpesa{
         * @param {string} param0.ConfirmationURL 
         * @param {string} param0.ValidationURL 
         *
-        * @returns {data}
+        * @returns {data} - Successful API call return type
         *
     * */
     async customerToBusinessv1({
@@ -583,7 +586,7 @@ export default class Mpesa{
         * @param {string} param0.queue_timeout_url 
         * @param {string} param0.OriginalConversationID 
         *
-        * @returns {data}
+        * @returns {data} - Successful API call return type
         *
     * */
     async transactionStatus({
@@ -675,7 +678,7 @@ export default class Mpesa{
         * @param {string} param0.resultURL 
         * @param {string} param0.remarks
         *
-        * @returns {data}
+        * @returns {data} - Successful API call return type
         *
         *
     * */
@@ -757,7 +760,7 @@ export default class Mpesa{
         * @param {string} param0.result_url 
         * @param {string} [param0.occassion="payout"] 
         *
-        * @returns {data}
+        * @returns {data} - Successful API call return type
         *
     * */
     async businessToCustomer({
@@ -846,7 +849,7 @@ export default class Mpesa{
         * @param {string} param0.timeoutURL 
         * @param {string} param0.resultURL
         *
-        * @returns {data}
+        * @returns {data} - Successful API call return type
         *
     * */
     async businessToBusinessBuyGoods({
@@ -935,7 +938,7 @@ export default class Mpesa{
         * @param {string} param0.result_url 
         *
         *
-        * @returns {data}
+        * @returns {data} - Successful API call return type
         *
     * */
     async businessToBusinessPaybill({
@@ -1022,7 +1025,7 @@ export default class Mpesa{
         * @param {string} param0.queue_timeout_url
         * @param {string} param0.result_url
         *
-        * @returns {data}
+        * @returns {data} - Successful API call return type
         *
     * */ 
     async businessToCustomerAccountTopup({
@@ -1124,7 +1127,7 @@ export default class Mpesa{
         * @param {string} param0.credit_party_identifier 
         * @param {number} [param0.qr_code_size=300] 
         *
-        * @returns {data}
+        * @returns {data} - Successful API call return type
         *
     * */
     async dynamicQRCode({
@@ -1209,7 +1212,7 @@ export default class Mpesa{
         * @param {string} param0.logo - JPEG, JPG optional
         * @param {string} param0.callbackURL - required
         *
-        * @returns {data} 
+        * @returns {data} - Successful API call return type 
         *
     * */
     async billManagerInvoiceOptin({
@@ -1299,7 +1302,7 @@ export default class Mpesa{
         * @param {string} param0.amount 
         * @param {invoice_item[]} param0.invoice_items 
         *
-        * @returns {data}
+        * @returns {data} - Successful API call return type
         *
     * */
     async billManagerSingleInvoicing({
@@ -1404,7 +1407,7 @@ export default class Mpesa{
         * @property {invoiceItem[]} invoiceItems
         * 
         * @param {invoice[]} invoices 
-        * @returns {data}
+        * @returns {data} - Successful API call return type
         *
         **/
     async billManagerBulkInvoicing(invoices){
@@ -1484,7 +1487,7 @@ export default class Mpesa{
         * @param {string} param0.account_number 
         * @param {string} param0.short_code 
         *
-        * @returns {data}
+        * @returns {data} - Successful API call return type
         *
     * */
     async billManagerReconciliation({
@@ -1555,7 +1558,7 @@ export default class Mpesa{
         *
         * @param {string} externalReference 
         *
-        * @returns {data}
+        * @returns {data} - Successful API call return type
         *
     * */
     async billManagerCancelSingleInvoicing(externalReference){
@@ -1615,7 +1618,7 @@ export default class Mpesa{
         *
         * @param {externalReference_t[]} references 
         *
-        * @returns {data}
+        * @returns {data} - Successful API call return type
         *
         *
     * */
@@ -1681,7 +1684,7 @@ export default class Mpesa{
         * @param {string} param0.logo 
         * @param {string} param0.callback_url 
         *
-        * @returns {data}
+        * @returns {data} - Successful API call return type
         *
     * */
     async billManagerUpdateOnBoardingDetails({
@@ -1799,7 +1802,7 @@ export default class Mpesa{
                 const response = await fetch(request)
                 if(response.error){
                     console.error("Dynamic QR code Error:", response.error)
-                    reject(response.error)
+                    reject(response.error )
                     return;
                 }
 
